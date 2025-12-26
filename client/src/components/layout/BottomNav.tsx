@@ -1,4 +1,4 @@
-import { Link, useLocation } from "wouter";
+import { useLocation } from "wouter";
 import { LayoutDashboard, Trophy, Crown, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -17,14 +17,19 @@ export function BottomNav() {
       <div className="flex justify-around items-center h-16">
         {navItems.map((item) => {
           const isActive = location === item.href;
+          const Icon = item.icon;
           return (
-            <Link key={item.href} href={item.href} className={cn(
-              "flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors duration-200 cursor-pointer",
-              isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
-            )}>
-              <item.icon className={cn("h-6 w-6", isActive && "stroke-[2.5px]")} />
+            <a
+              key={item.href}
+              href={item.href}
+              className={cn(
+                "flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors duration-200 cursor-pointer",
+                isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <Icon className={cn("h-6 w-6", isActive && "stroke-[2.5px]")} />
               <span className="text-[10px] font-medium">{item.label}</span>
-            </Link>
+            </a>
           );
         })}
       </div>
