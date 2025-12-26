@@ -17,7 +17,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         - Desktop: pl-64 to account for fixed sidebar, no bottom padding needed
       */}
       <main className="flex-1 md:pl-64 pb-20 md:pb-8 min-h-screen">
-        <div className="container mx-auto p-4 md:p-8 max-w-7xl animate-in fade-in duration-500">
+        <div className="container mx-auto p-4 md:p-8 max-w-7xl">
           {children}
         </div>
       </main>
