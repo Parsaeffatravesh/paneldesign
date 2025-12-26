@@ -3,6 +3,7 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { ExportTournaments } from "@/components/ExportTournaments";
 
 const mockTournaments = {
   ongoing: [
@@ -23,12 +24,23 @@ const mockTournaments = {
 
 export default function MyTournaments() {
   const { t } = useI18n();
+  
+  const allTournaments = [
+    ...mockTournaments.ongoing,
+    ...mockTournaments.review,
+    ...mockTournaments.finished,
+    ...mockTournaments.canceled,
+  ];
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">{t("tournaments.title")}</h1>
-          <p className="text-muted-foreground">{t("tournaments.subtitle")}</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">{t("tournaments.title")}</h1>
+            <p className="text-muted-foreground">{t("tournaments.subtitle")}</p>
+          </div>
+          <ExportTournaments tournaments={allTournaments} />
         </div>
 
         <Tabs defaultValue="ongoing" className="w-full">

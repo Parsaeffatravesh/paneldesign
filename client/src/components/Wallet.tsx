@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useI18n } from "@/hooks/useI18n";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowDownRight, ArrowUpLeft, Wallet as WalletIcon } from "lucide-react";
 import { DepositModal } from "./DepositModal";
 import { WithdrawModal } from "./WithdrawModal";
+import { TransactionFilter } from "./TransactionFilter";
+import { TransactionExport } from "./TransactionExport";
 
 interface Transaction {
   id: string;
@@ -15,6 +17,13 @@ interface Transaction {
   status: "completed" | "pending";
 }
 
+interface TransactionFilters {
+  type?: string;
+  status?: string;
+  minAmount?: number;
+  maxAmount?: number;
+}
+
 export function Wallet() {
   const { t } = useI18n();
   const [balance, setBalance] = useState(1250.5);
@@ -22,11 +31,24 @@ export function Wallet() {
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [depositing, setDepositing] = useState(false);
   const [withdrawing, setWithdrawing] = useState(false);
+  const [transactionFilters, setTransactionFilters] = useState<TransactionFilters>({});
   const [transactions, setTransactions] = useState<Transaction[]>([
     { id: "1", type: "deposit", amount: 500, date: "2 روز پیش", status: "completed" },
     { id: "2", type: "withdraw", amount: 200, date: "1 هفته پیش", status: "completed" },
     { id: "3", type: "deposit", amount: 1000, date: "2 هفته پیش", status: "completed" },
+    { id: "4", type: "deposit", amount: 100, date: "3 روز پیش", status: "pending" },
+    { id: "5", type: "withdraw", amount: 50, date: "1 ماه پیش", status: "completed" },
   ]);
+
+  const filteredTransactions = useMemo(() => {
+    return transactions.filter((tx) => {
+      if (transactionFilters.type && tx.type !== transactionFilters.type) return false;
+      if (transactionFilters.status && tx.status !== transactionFilters.status) return false;
+      if (transactionFilters.minAmount && tx.amount < transactionFilters.minAmount) return false;
+      if (transactionFilters.maxAmount && tx.amount > transactionFilters.maxAmount) return false;
+      return true;
+    });
+  }, [transactions, transactionFilters]);
 
   const handleDeposit = (amount: number) => {
     setDepositing(true);
@@ -86,34 +108,48 @@ export function Wallet() {
           </div>
 
           <div className="space-y-3">
-            <h3 className="font-semibold text-sm">{t("wallet.recentTransactions")}</h3>
-            {transactions.map((tx) => (
-              <div key={tx.id} className="flex items-center justify-between p-3 border rounded-lg">
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-full ${tx.type === "deposit" ? "bg-green-100" : "bg-red-100"}`}>
-                    {tx.type === "deposit" ? (
-                      <ArrowDownRight className="w-4 h-4 text-green-700" />
-                    ) : (
-                      <ArrowUpLeft className="w-4 h-4 text-red-700" />
-                    )}
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="font-semibold text-sm">{t("wallet.recentTransactions")}</h3>
+              <TransactionExport transactions={transactions} />
+            </div>
+
+            <TransactionFilter onFilterChange={setTransactionFilters} />
+
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {filteredTransactions.map((tx) => (
+                <div key={tx.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-full ${tx.type === "deposit" ? "bg-green-100" : "bg-red-100"}`}>
+                      {tx.type === "deposit" ? (
+                        <ArrowDownRight className="w-4 h-4 text-green-700" />
+                      ) : (
+                        <ArrowUpLeft className="w-4 h-4 text-red-700" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-medium text-sm">
+                        {tx.type === "deposit" ? t("wallet.depositFlow") : t("wallet.withdrawFlow")}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{tx.date}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium text-sm">
-                      {tx.type === "deposit" ? t("wallet.depositFlow") : t("wallet.withdrawFlow")}
+                  <div className="text-right">
+                    <p className={`font-semibold text-sm ${tx.type === "deposit" ? "text-green-600" : "text-red-600"}`}>
+                      {tx.type === "deposit" ? "+" : "-"}${tx.amount.toFixed(2)}
                     </p>
-                    <p className="text-xs text-muted-foreground">{tx.date}</p>
+                    <Badge variant={tx.status === "completed" ? "default" : "secondary"} className="text-xs mt-1">
+                      {t(`wallet.${tx.status}`)}
+                    </Badge>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className={`font-semibold text-sm ${tx.type === "deposit" ? "text-green-600" : "text-red-600"}`}>
-                    {tx.type === "deposit" ? "+" : "-"}${tx.amount.toFixed(2)}
-                  </p>
-                  <Badge variant={tx.status === "completed" ? "default" : "secondary"} className="text-xs mt-1">
-                    {t(`wallet.${tx.status}`)}
-                  </Badge>
+              ))}
+
+              {filteredTransactions.length === 0 && (
+                <div className="text-center py-6 text-muted-foreground text-sm">
+                  No transactions found
                 </div>
-              </div>
-            ))}
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>

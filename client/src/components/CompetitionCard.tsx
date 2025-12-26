@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Info } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CountdownTimer } from "./CountdownTimer";
 
 interface Prize {
   place: number;
@@ -29,8 +30,8 @@ export function CompetitionCard({
   status,
 }: CompetitionCardProps) {
   const [showPrizePopup, setShowPrizePopup] = useState(false);
+  const [prizePopupFocused, setPrizePopupFocused] = useState(false);
 
-  const hoursRemaining = Math.max(0, Math.ceil((new Date(startAt).getTime() - Date.now()) / (1000 * 60 * 60)));
   const prizeTotal = prizeBreakdown.reduce((sum, p) => sum + p.amount, 0);
 
   const statusBadgeColor = {
@@ -41,13 +42,25 @@ export function CompetitionCard({
     canceled: "bg-red-100 text-red-800",
   };
 
+  // Handle Esc key
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setShowPrizePopup(false);
+        setPrizePopupFocused(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   return (
-    <Card className="group hover:shadow-md transition-shadow">
+    <Card className="group hover:shadow-md transition-shadow cursor-pointer hover:border-primary/20">
       <CardContent className="p-5 space-y-4">
         <div className="flex justify-between items-start gap-4">
           <div>
             <h3 className="font-semibold text-lg">{title}</h3>
-            <p className="text-sm text-muted-foreground">شروع در {hoursRemaining} ساعت</p>
+            <p className="text-sm text-muted-foreground">شروع در <CountdownTimer startAt={startAt} /></p>
           </div>
           <span className={cn("text-xs font-medium px-2 py-1 rounded-full", statusBadgeColor[status])}>
             {status === "starting-soon" ? "شروع کنندگی" : status === "live" ? "زنده" : "آینده"}
@@ -67,21 +80,29 @@ export function CompetitionCard({
             <span className="text-muted-foreground">جایزه کل</span>
             <p className="font-semibold">${prizeTotal.toFixed(2)}</p>
           </div>
-          <div className="relative">
+          <div className="relative group">
             <div className="flex items-center gap-2">
               <span className="text-muted-foreground">تفکیک جوایز</span>
               <button
                 onClick={() => setShowPrizePopup(!showPrizePopup)}
+                onFocus={() => setPrizePopupFocused(true)}
+                onBlur={() => setPrizePopupFocused(false)}
                 aria-label="نمایش تفکیک جوایز"
-                className="text-primary hover:bg-primary/10 p-1 rounded"
+                aria-haspopup="dialog"
+                aria-expanded={showPrizePopup || prizePopupFocused}
+                className="text-primary hover:bg-primary/10 p-1 rounded transition-colors"
               >
                 <Info className="w-4 h-4" />
               </button>
             </div>
             
-            {showPrizePopup && (
-              <div className="absolute bottom-full right-0 mb-2 bg-background border rounded-lg shadow-lg p-3 z-10 w-48">
-                <h4 className="font-semibold text-sm mb-2">تفکیک جوایز</h4>
+            {(showPrizePopup || prizePopupFocused) && (
+              <div 
+                role="dialog"
+                aria-labelledby="prize-popup-title"
+                className="absolute bottom-full right-0 mb-2 bg-background border rounded-lg shadow-lg p-3 z-10 w-48 animate-in fade-in slide-in-from-bottom-2"
+              >
+                <h4 id="prize-popup-title" className="font-semibold text-sm mb-2">تفکیک جوایز</h4>
                 <ul className="space-y-1 text-sm">
                   {prizeBreakdown.slice(0, 3).map((prize) => (
                     <li key={prize.place} className="flex justify-between">
@@ -92,9 +113,9 @@ export function CompetitionCard({
                 </ul>
                 <button
                   onClick={() => setShowPrizePopup(false)}
-                  className="text-xs mt-2 text-muted-foreground hover:text-foreground"
+                  className="text-xs mt-2 text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  بستن
+                  بستن (Esc)
                 </button>
               </div>
             )}
