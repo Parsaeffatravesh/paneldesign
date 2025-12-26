@@ -1,0 +1,250 @@
+Context & Goals
+You are designing and implementing a polished, modern admin/dashboard panel (web UI) for a competitive tournaments platform. Deliverables: a full design system (Figma), component library (React + TypeScript), Storybook with documented components and themeable Light + Dark modes, and production-ready implementation guidelines optimized for low latency. The UI should be contemporary and minimal, use subtle gradients, be accessible, responsive, and internationalized. Focus on reusability, scalability, developer handoff (tokens, CSS vars or Tailwind tokens), and highly responsive interactions with minimal client-perceived latency.
+
+Key Feature Additions (important)
+
+Replace Leaderboard Page with “All Competitions” Page
+
+The dashboard should include an All Competitions listing (instead of a leaderboard). This page lists all active/upcoming competitions with robust filtering (status, entry fee, prize size, time-to-start, category), sorting and search.
+
+Each competition is shown as a Competition Card (detailed below).
+
+Competition Card Requirements
+
+Fields displayed: Entry fee, n hours remaining to start (countdown), number of participants, prize amount (total).
+
+Prize detail: On hover (desktop) show a minimal, accessible popup/modal that displays prize breakdown for 1st, 2nd and 3rd places (e.g., 1st: $X, 2nd: $Y, 3rd: $Z). Popup must be keyboard-focusable and dismissible (Esc) and should appear on focus for keyboard users. On mobile the popup should open by tapping the prize area or card and appear as a small bottom sheet or toast.
+
+Countdown: show hours remaining (e.g., “n hours”), fallback to days/h:m for longer intervals; handle timezone differences (server authoritative time, client offset, and resiliency to clock skew). Provide an accessible aria-live region for countdown updates so screen readers get updates as necessary (but consider prefers-reduced-motion for rate).
+
+States: upcoming, starting soon (<1 hour with highlight), live, ended, canceled. Visual emphasis for “starting soon” (subtle glowing gradient or badge).
+
+Microinteraction: subtle hover lift and gradient highlight on primary actions. Respect prefers-reduced-motion.
+
+Accessibility: icon-only actions with aria-label, keyboard navigation to trigger prize popup, and contrast compliant text.
+
+My Tournaments Page
+
+Provide a tabbed or segmented control with sections: Ongoing (در حال برگزاری), Under Review (در حال بررسی), Finished (تمام شده), Canceled (کنسل شده).
+
+Each section lists tournament cards (same card component but with status indicators), with filters, pagination / infinite scroll and export options.
+
+Provide actions per tournament depending on status (e.g., in-review: view evidence / appeal; ongoing: view live participants / manage; finished: payout / generate results; canceled: refund metadata).
+
+Profile — Wallet Section
+
+In the Profile area include a Wallet section that: shows current balance (currency-aware), recent transactions (compact list), and provides Deposit and Withdraw flows.
+
+Deposit: integrate payment providers (Stripe / Adyen / local payment gateways where needed). Provide quick-amount presets and custom amount, card/checkout flow, and show pending/confirmed state.
+
+Withdraw: implement withdrawal flow with necessary verification steps, display fees/time estimates, and transaction status. Use optimistic UI for the local balance change, but show clear pending/confirmed states. Provide transaction history and basic KYC hint if required.
+
+Security: require 2FA for withdrawals or sensitive actions (configurable); show help and limits. Add clear validation and error/success toasts.
+
+Multilingual & RTL Support
+
+Panel must be multilingual and support at minimum: English, Persian (if required), French, Arabic, Chinese (Simplified), German, Russian, Hindi, Turkish. Support easy addition of more locales.
+
+Right-to-left (RTL): Arabic (and Persian if included) must render correctly with dir="rtl" or [dir="rtl"] styles and layout mirroring. Use CSS logical properties (margin-inline, padding-inline, etc.) to simplify RTL. Ensure iconography and chevrons flip automatically or via CSS transforms.
+
+Font & script: include fonts covering the script range (e.g., Noto family or appropriate local fonts) and fallback stacks. Use ICU-style formatting for numbers, dates, and pluralization (i18n lib).
+
+Language switcher: top-bar control with lazy-loaded locale bundles and fallback order. Provide lang attribute and handle language persistence (localStorage or user profile).
+
+Translation strategy: use i18n JSON resources, with keys for UI strings and variables for runtime values. Prefer ICU message format for pluralization and formatting. Provide translations for date/time/currency rendering.
+
+Lowest Possible Perceived Latency (Engineering Guidance)
+
+Frontend architecture: Next.js (App Router or Pages) + React + TypeScript. Pre-render pages where possible and hydrate. Use SSR/ISR/SSG appropriately: static for All Competitions listing with frequent revalidation (e.g., every 10–30s) or SSR for truly dynamic pages.
+
+Edge & CDN: Host on Vercel/Netlify or any CDN that supports edge functions. Use CDN caching with short TTL for competition listings and content invalidation on updates.
+
+Realtime updates: Use WebSockets / Server-Sent Events (SSE) / Pusher / Ably for live participant counts and status updates. Fallback to short-polling only if real-time not available. Use delta updates for minimal payload.
+
+Data fetching & caching: SWR or React Query on the client for caching, deduping, background revalidation, and optimistic updates (wallet). Use HTTP caching headers for API responses; on server use Redis or edge-store for repeated queries.
+
+Performance: code-splitting, dynamic import of heavy components (charts, maps), tree-shaking, compress assets, optimize SVGs, use font-display: swap, and only load locale packs on demand.
+
+API design: lightweight JSON, support partial responses, pagination, ETags & 304 responses. Consider using GraphQL with persisted queries if client-driven queries are complex.
+
+Backend: use a fast DB (Postgres, DynamoDB) with an API gateway; use job queue for heavy work. For wallet operations ensure idempotent API endpoints and transactional safety.
+
+Monitoring & metrics: instrument latency, API timings, CDN hit ratio. Optimize slow endpoints and pre-warm caches if necessary.
+
+Design & Implementation Details
+
+All previous design system instructions apply (Design Tokens, Theming, Typography, Grid, Components). Additions below are focused on competitions, wallet, i18n, and low-latency engineering practices.
+
+Competition Card — Accessible Example (React + TypeScript)
+
+// CompetitionCard.tsx
+import React, { useEffect, useState } from "react";
+import styles from "./CompetitionCard.module.css";
+import { formatDistanceStrict } from "date-fns"; // or use Intl.RelativeTimeFormat for i18n
+
+type PrizeBreakdown = { place: number; amount: number }[];
+type Props = {
+  id: string;
+  title: string;
+  entryFee: number;
+  prizeTotal: number;
+  prizeBreakdown: PrizeBreakdown;
+  participants: number;
+  startAt: string; // ISO
+  currency: string;
+  onOpenDetails?: () => void;
+};
+
+export const CompetitionCard: React.FC<Props> = ({ title, entryFee, participants, startAt, prizeBreakdown, currency }) => {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000 * 60); // update per minute; choose frequency
+    return () => clearInterval(t);
+  }, []);
+
+  const startsInMs = new Date(startAt).getTime() - now;
+  const hoursRemaining = Math.max(0, Math.ceil(startsInMs / (1000 * 60 * 60)));
+
+  return (
+    <article className={styles.card} tabIndex={0} aria-roledescription="competition">
+      <header className={styles.head}>
+        <h3 className={styles.title}>{title}</h3>
+        <div className={styles.badge}>{hoursRemaining <= 1 ? "Starting soon" : `${hoursRemaining} hr${hoursRemaining > 1 ? "s" : ""}`}</div>
+      </header>
+      <div className={styles.body}>
+        <div className={styles.row}>
+          <label>Entry</label>
+          <div>{new Intl.NumberFormat(undefined, { style: "currency", currency }).format(entryFee)}</div>
+        </div>
+        <div className={styles.row}>
+          <label>Participants</label>
+          <div aria-live="polite">{participants}</div>
+        </div>
+        <div className={styles.row}>
+          <label>Prize</label>
+          <div>
+            {new Intl.NumberFormat(undefined, { style: "currency", currency }).format(prizeBreakdown.reduce((s, p) => s + p.amount, 0))}
+            <button className={styles.prizeBtn} aria-haspopup="dialog" aria-expanded="false" aria-label="View prize breakdown">
+              ⓘ
+            </button>
+          </div>
+        </div>
+      </div>
+      {/* Accessible minimal popup: show on hover/focus or tap */}
+      <div role="dialog" aria-hidden="true" className={styles.minimalPopup}>
+        <h4>Top Prizes</h4>
+        <ol>
+          {prizeBreakdown.slice(0, 3).map(p => (
+            <li key={p.place}>{p.place}. {new Intl.NumberFormat(undefined, { style: "currency", currency }).format(p.amount)}</li>
+          ))}
+        </ol>
+      </div>
+    </article>
+  );
+};
+
+
+Make sure the popup toggles aria-hidden and aria-expanded correctly, and is focus-trapped if it appears as a modal on mobile.
+
+For hover, prefer CSS for quick appearance but ensure keyboard focus also reveals the popup.
+
+Wallet (Profile) — Skeleton Example
+
+// Wallet.tsx (simplified)
+import React, { useState } from "react";
+export const Wallet = () => {
+  const [balance, setBalance] = useState(124.50);
+  const [transactions, setTransactions] = useState([]);
+  // Deposit flow skeleton — open modal, call API, optimistic update
+  const deposit = async (amount:number) => {
+    setBalance(b => b + amount); // optimistic
+    // call API and reconcile or rollback on failure
+  };
+  const withdraw = async (amount:number) => {
+    // security checks and 2FA
+  };
+  return (
+    <section aria-labelledby="wallet-heading">
+      <h2 id="wallet-heading">Wallet</h2>
+      <div>Balance: ${balance.toFixed(2)}</div>
+      <div>
+        <button onClick={() => deposit(20)}>Deposit $20</button>
+        <button onClick={() => withdraw(20)}>Withdraw $20</button>
+      </div>
+      <div aria-live="polite">Recent Transactions ...</div>
+    </section>
+  );
+};
+
+
+Backend: deposit/withdrawal endpoints must be idempotent, transactional, and provide meaningful error codes. Use server-side event/WS to inform clients of transaction confirmations.
+
+i18n Implementation Guidance
+
+Use i18next / next-i18next or react-intl with ICU messages. Keep translations in JSON keyed by namespace (e.g., common, competitions, wallet).
+
+Lazy-load locale files on language switch; keep a small core bundle.
+
+For dates/currency use Intl.DateTimeFormat and Intl.NumberFormat per locale; for more complex formatting use formatjs.
+
+Use dir attribute and CSS logical properties for RTL. Ensure mirrored layout for sidebars and chevrons via CSS or variant icons.
+
+UX Notes for Prize Popup & Accessibility
+
+Popup should be trivial, not heavy: show 1–3 prize items and a small “close” control. On hover it should be non-modal; on keyboard focus or mobile tap, it can escalate to an overlay with focus management. Keep transitions quick.
+
+Provide aria labels and ensure the popup can be opened via keyboard (Enter/Space) and dismissed by Esc or tapping outside. For mobile, ensure the bottom-sheet has role="dialog" and accessible labeling.
+
+Low-latency coding patterns
+
+Use server-side rendering for the initial All Competitions list (fast TTFB) with edge caching and background revalidation.
+
+Use SWR (stale-while-revalidate) for participant counts and per-card details with short revalidation times. For live counters, use WebSocket/SSE with small messages (e.g., {id, participantsDelta}) to minimize bandwidth.
+
+Use incremental updates for the countdown timers — update visually on the client but avoid fetching per-card data too often. Clock sync: utilize server-provided epoch to compute client offset on load.
+
+For wallet actions: optimistic UI + rollback on failure; ensure idempotency with client-provided idempotency keys. All sensitive endpoints must use secure TLS and rate limiting.
+
+Testing & QA
+
+Add automated tests for i18n rendering (RTL visual regression tests), wallet flows (unit + integration), competition card states, and accessibility (axe, jest-axe).
+
+Performance budgets: TTFB target < 300ms for SSR pages, Lighthouse performance score target > 90 for core pages, and Time to Interactive minimized via code-splitting.
+
+Storybook & Documentation
+
+Document CompetitionCard, popup behavior, countdown, and Wallet component with stories for each status and locale/RTL variations. Include knobs for entryFee, participants, prizeBreakdown, startAt.
+
+Provide a ThemeSwitcher story demonstrating Light/Dark and RTL.
+
+Acceptance Criteria (updated)
+
+All Competitions page implemented and documented in Figma + Storybook. Competition card displays entry fee, hours to start, participants, prize, and accessible popup for top 3 prizes (desktop hover / keyboard / mobile tap).
+
+My Tournaments page: tabs Ongoing / Under Review / Finished / Canceled with actions per status.
+
+Profile Wallet: balance display, deposit & withdraw flows with optimistic UI and transaction history, documented edge-cases (2FA/limits/fees).
+
+Multilingual: UI available in English + French + Arabic (RTL) + Chinese + German + Russian + Hindi + Turkish with proper directionality, number/date/currency formatting, and on-the-fly locale loading.
+
+Performance: pages use SSR/ISR and edge caching; live participant updates via WebSocket/SSE; wallet flows are responsive and safe; production deploy demonstrates low-latency architecture.
+
+Accessibility: all components meet WCAG AA for contrast; prize popup accessible via keyboard; RTL and focus management verified.
+
+Notes for feeding this prompt to an AI / designer / developer
+
+Attach sample dataset: competitions list with startAt, participants, entryFee, prizeBreakdown (1..3), status.
+
+Provide brand constraints and currency/country coverage.
+
+Indicate required payment providers and compliance (PCI, KYC) if wallet operations go to production.
+
+Indicate target deployment (Vercel, Netlify, AWS) and backend tech preferences (Postgres, Redis, serverless functions).
+
+Extras
+
+Add a “quick-join” UX pattern for competitions that reduces clicks and latency (optimistic UI, cached consent).
+
+Provide a “compact mode” for dense lists enabling power users to scan more competitions at once.
+
+Provide high-contrast / high accessibility theme option in addition to Light/Dark.
