@@ -5,16 +5,17 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
-import Tournaments from "@/pages/tournaments";
-import Leaderboard from "@/pages/leaderboard";
+import MyTournaments from "@/pages/my-tournaments";
+import Competitions from "@/pages/competitions";
 import Profile from "@/pages/profile";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Dashboard} />
-      <Route path="/tournaments" component={Tournaments} />
-      <Route path="/leaderboard" component={Leaderboard} />
+      <Route path="/tournaments" component={MyTournaments} />
+      <Route path="/leaderboard" component={Competitions} />
+      <Route path="/competitions" component={Competitions} />
       <Route path="/profile" component={Profile} />
       <Route component={NotFound} />
     </Switch>
