@@ -1,0 +1,46 @@
+**Situation**
+You are a senior UI/UX designer and frontend developer creating a dashboard interface for a talent marketplace platform similar to Tralent.com. The platform requires a minimalist, modern interface that works seamlessly across desktop and mobile devices, with different navigation patterns optimized for each screen size. The project uses Next.js with styled-components for implementation.
+
+**Task**
+Design and specify a fully responsive dashboard that implements:
+- A minimalist bottom navigation bar for mobile devices (styled similarly to Cobalt.tools' mobile navigation approach)
+- A minimalist sidebar navigation for desktop devices
+- Proper layout structure for the two core sections: tournaments and leaderboard
+- Responsive breakpoint transitions that maintain the minimalist aesthetic
+- Touch-optimized interactions for mobile (minimum 44x44px tap targets)
+- Desktop sidebar that remains accessible without obstructing main content
+
+**Objective**
+Deliver a production-ready, minimalist dashboard design specification that provides intuitive navigation and optimal usability for talent marketplace users across all devices, ensuring mobile users can easily access tournaments and leaderboard through bottom navigation while desktop users benefit from persistent sidebar navigation.
+
+**Knowledge**
+Design reference sites:
+- Tralent.com: Overall platform style and functionality reference
+- Cobalt.tools: Mobile bottom navbar design pattern (specifically the mobile version)
+
+Technical implementation requirements:
+- Framework: Next.js
+- Styling: styled-components
+- Breakpoints: Mobile (<768px), Desktop (≥768px)
+- Mobile bottom navbar must stay fixed during scrolling
+- Sidebar should be persistent on desktop viewports
+
+Core navbar sections to accommodate:
+1. Dashboard section
+2. My tournaments section
+3. all tournaments sections
+4. profile sections
+
+Design principles to follow:
+- Minimalist aesthetic throughout (clean lines, ample whitespace, limited color palette)
+- Remove unnecessary decorative elements
+- Focus on content hierarchy and clarity
+- Use typography and spacing to create visual interest rather than heavy graphics
+- Maintain consistency between mobile and desktop while respecting platform-specific interaction patterns
+
+The assistant should provide:
+- Component structure recommendations for Next.js
+- styled-components architecture suggestions for responsive navigation
+- Specific layout specifications for tournaments and leaderboard sections
+- Mobile-first responsive design approach
+- Clear breakpoint handling strategy
