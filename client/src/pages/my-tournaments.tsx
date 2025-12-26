@@ -1,3 +1,4 @@
+import { useI18n } from "@/hooks/useI18n";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,81 +22,82 @@ const mockTournaments = {
 };
 
 export default function MyTournaments() {
+  const { t } = useI18n();
   return (
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">مسابقات من</h1>
-          <p className="text-muted-foreground">مسابقات شما را مدیریت کنید</p>
+          <h1 className="text-3xl font-bold tracking-tight">{t("tournaments.title")}</h1>
+          <p className="text-muted-foreground">{t("tournaments.subtitle")}</p>
         </div>
 
         <Tabs defaultValue="ongoing" className="w-full">
           <TabsList className="grid w-full grid-cols-4 bg-transparent border-b rounded-none p-0 h-auto">
             <TabsTrigger value="ongoing" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-4 py-2">
-              در حال برگزاری
+              {t("tournaments.ongoing")}
             </TabsTrigger>
             <TabsTrigger value="review" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-4 py-2">
-              در حال بررسی
+              {t("tournaments.underReview")}
             </TabsTrigger>
             <TabsTrigger value="finished" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-4 py-2">
-              تمام شده
+              {t("tournaments.finished")}
             </TabsTrigger>
             <TabsTrigger value="canceled" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-4 py-2">
-              کنسل شده
+              {t("tournaments.canceled")}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="ongoing" className="mt-6 space-y-4">
-            {mockTournaments.ongoing.map((t) => (
-              <Card key={t.id}>
+            {mockTournaments.ongoing.map((tournament) => (
+              <Card key={tournament.id}>
                 <CardContent className="p-4 flex justify-between items-center">
                   <div>
-                    <h3 className="font-semibold">{t.title}</h3>
-                    <p className="text-sm text-muted-foreground">{t.participants} شرکت‌کننده</p>
+                    <h3 className="font-semibold">{tournament.title}</h3>
+                    <p className="text-sm text-muted-foreground">{tournament.participants} شرکت‌کننده</p>
                   </div>
-                  <Badge variant="outline">مشاهده لایو</Badge>
+                  <Badge variant="outline">{t("tournaments.viewLive")}</Badge>
                 </CardContent>
               </Card>
             ))}
           </TabsContent>
 
           <TabsContent value="review" className="mt-6 space-y-4">
-            {mockTournaments.review.map((t) => (
-              <Card key={t.id}>
+            {mockTournaments.review.map((tournament) => (
+              <Card key={tournament.id}>
                 <CardContent className="p-4 flex justify-between items-center">
                   <div>
-                    <h3 className="font-semibold">{t.title}</h3>
-                    <p className="text-sm text-muted-foreground">{t.participants} شرکت‌کننده</p>
+                    <h3 className="font-semibold">{tournament.title}</h3>
+                    <p className="text-sm text-muted-foreground">{tournament.participants} {t("tournaments.upcoming")}</p>
                   </div>
-                  <Badge variant="outline">مشاهده مدارک</Badge>
+                  <Badge variant="outline">{t("tournaments.viewEvidence")}</Badge>
                 </CardContent>
               </Card>
             ))}
           </TabsContent>
 
           <TabsContent value="finished" className="mt-6 space-y-4">
-            {mockTournaments.finished.map((t) => (
-              <Card key={t.id}>
+            {mockTournaments.finished.map((tournament) => (
+              <Card key={tournament.id}>
                 <CardContent className="p-4 flex justify-between items-center">
                   <div>
-                    <h3 className="font-semibold">{t.title}</h3>
-                    <p className="text-sm text-muted-foreground">رتبه: {(t as any).rank} - جایزه: ${(t as any).prize}</p>
+                    <h3 className="font-semibold">{tournament.title}</h3>
+                    <p className="text-sm text-muted-foreground">رتبه: {(tournament as any).rank} - جایزه: ${(tournament as any).prize}</p>
                   </div>
-                  <Badge>نتایج</Badge>
+                  <Badge>{t("tournaments.results")}</Badge>
                 </CardContent>
               </Card>
             ))}
           </TabsContent>
 
           <TabsContent value="canceled" className="mt-6 space-y-4">
-            {mockTournaments.canceled.map((t) => (
-              <Card key={t.id}>
+            {mockTournaments.canceled.map((tournament) => (
+              <Card key={tournament.id}>
                 <CardContent className="p-4 flex justify-between items-center">
                   <div>
-                    <h3 className="font-semibold">{t.title}</h3>
-                    <p className="text-sm text-muted-foreground">{(t as any).reason}</p>
+                    <h3 className="font-semibold">{tournament.title}</h3>
+                    <p className="text-sm text-muted-foreground">{(tournament as any).reason}</p>
                   </div>
-                  <Badge variant="destructive">کنسل</Badge>
+                  <Badge variant="destructive">{t("tournaments.canceled")}</Badge>
                 </CardContent>
               </Card>
             ))}

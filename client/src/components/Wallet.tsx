@@ -1,8 +1,11 @@
 import { useState } from "react";
+import { useI18n } from "@/hooks/useI18n";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowDownRight, ArrowUpLeft, Wallet as WalletIcon } from "lucide-react";
+import { DepositModal } from "./DepositModal";
+import { WithdrawModal } from "./WithdrawModal";
 
 interface Transaction {
   id: string;
@@ -13,12 +16,43 @@ interface Transaction {
 }
 
 export function Wallet() {
+  const { t } = useI18n();
   const [balance, setBalance] = useState(1250.5);
-  const [transactions] = useState<Transaction[]>([
+  const [showDepositModal, setShowDepositModal] = useState(false);
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [depositing, setDepositing] = useState(false);
+  const [withdrawing, setWithdrawing] = useState(false);
+  const [transactions, setTransactions] = useState<Transaction[]>([
     { id: "1", type: "deposit", amount: 500, date: "2 روز پیش", status: "completed" },
     { id: "2", type: "withdraw", amount: 200, date: "1 هفته پیش", status: "completed" },
     { id: "3", type: "deposit", amount: 1000, date: "2 هفته پیش", status: "completed" },
   ]);
+
+  const handleDeposit = (amount: number) => {
+    setDepositing(true);
+    setTimeout(() => {
+      setBalance(b => b + amount);
+      setTransactions([
+        { id: String(Date.now()), type: "deposit", amount, date: "تازه", status: "completed" },
+        ...transactions,
+      ]);
+      setShowDepositModal(false);
+      setDepositing(false);
+    }, 800);
+  };
+
+  const handleWithdraw = (amount: number) => {
+    setWithdrawing(true);
+    setTimeout(() => {
+      setBalance(b => b - amount);
+      setTransactions([
+        { id: String(Date.now()), type: "withdraw", amount, date: "تازه", status: "pending" },
+        ...transactions,
+      ]);
+      setShowWithdrawModal(false);
+      setWithdrawing(false);
+    }, 800);
+  };
 
   return (
     <div className="space-y-6">
@@ -26,33 +60,33 @@ export function Wallet() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <WalletIcon className="w-5 h-5" />
-            کیف پول
+            {t("wallet.title")}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg p-6">
-            <p className="text-muted-foreground text-sm mb-2">موجودی فعلی</p>
+            <p className="text-muted-foreground text-sm mb-2">{t("wallet.balance")}</p>
             <h2 className="text-4xl font-bold">${balance.toFixed(2)}</h2>
           </div>
 
           <div className="flex gap-3">
             <Button 
               className="flex-1"
-              onClick={() => setBalance(b => b + 50)}
+              onClick={() => setShowDepositModal(true)}
             >
-              واریز
+              {t("wallet.depositFlow")}
             </Button>
             <Button 
               variant="outline" 
               className="flex-1"
-              onClick={() => setBalance(b => Math.max(0, b - 50))}
+              onClick={() => setShowWithdrawModal(true)}
             >
-              برداشت
+              {t("wallet.withdrawFlow")}
             </Button>
           </div>
 
           <div className="space-y-3">
-            <h3 className="font-semibold text-sm">تراکنش‌های اخیر</h3>
+            <h3 className="font-semibold text-sm">{t("wallet.recentTransactions")}</h3>
             {transactions.map((tx) => (
               <div key={tx.id} className="flex items-center justify-between p-3 border rounded-lg">
                 <div className="flex items-center gap-3">
@@ -65,7 +99,7 @@ export function Wallet() {
                   </div>
                   <div>
                     <p className="font-medium text-sm">
-                      {tx.type === "deposit" ? "واریز" : "برداشت"}
+                      {tx.type === "deposit" ? t("wallet.depositFlow") : t("wallet.withdrawFlow")}
                     </p>
                     <p className="text-xs text-muted-foreground">{tx.date}</p>
                   </div>
@@ -75,7 +109,7 @@ export function Wallet() {
                     {tx.type === "deposit" ? "+" : "-"}${tx.amount.toFixed(2)}
                   </p>
                   <Badge variant={tx.status === "completed" ? "default" : "secondary"} className="text-xs mt-1">
-                    {tx.status === "completed" ? "تکمیل شده" : "درانتظار"}
+                    {t(`wallet.${tx.status}`)}
                   </Badge>
                 </div>
               </div>
@@ -83,6 +117,20 @@ export function Wallet() {
           </div>
         </CardContent>
       </Card>
+
+      <DepositModal
+        isOpen={showDepositModal}
+        onClose={() => setShowDepositModal(false)}
+        onSubmit={handleDeposit}
+        loading={depositing}
+      />
+      <WithdrawModal
+        isOpen={showWithdrawModal}
+        onClose={() => setShowWithdrawModal(false)}
+        onSubmit={handleWithdraw}
+        balance={balance}
+        loading={withdrawing}
+      />
     </div>
   );
 }
