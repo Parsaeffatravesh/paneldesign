@@ -2,9 +2,12 @@ import { useLocation } from "wouter";
 import { LayoutDashboard, Trophy, Crown, User, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LanguageSwitcher } from "../LanguageSwitcher";
+import { ThemeSwitcher } from "../ThemeSwitcher";
+import { useI18n } from "@/hooks/useI18n";
 
 export function Sidebar() {
   const [location] = useLocation();
+  const { t } = useI18n();
 
   const navItems = [
     { icon: LayoutDashboard, label: "Dashboard", href: "/" },
@@ -48,9 +51,10 @@ export function Sidebar() {
 
       <div className="p-4 border-t border-sidebar-border space-y-3">
         <LanguageSwitcher />
+        <ThemeSwitcher />
         <button className="flex items-center gap-3 px-3 py-2.5 w-full rounded-md text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-all cursor-pointer">
           <LogOut className="h-5 w-5 stroke-[1.5px]" />
-          Log out
+          {location ? "Log out" : t("common.logout", "Log out")}
         </button>
       </div>
     </aside>

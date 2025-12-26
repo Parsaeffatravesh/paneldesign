@@ -12,6 +12,12 @@
       "error": "Error",
       "success": "Success"
     },
+    "theme": {
+      "light": "Light",
+      "dark": "Dark",
+      "legendary": "Legendary",
+      "title": "Theme"
+    },
     "competitions": {
       "title": "All Competitions",
       "subtitle": "Browse and join competitions",
@@ -85,6 +91,12 @@
       "loading": "درحال بارگذاری...",
       "error": "خطا",
       "success": "موفق"
+    },
+    "theme": {
+      "light": "روشن",
+      "dark": "تاریک",
+      "legendary": "افسانه‌ای",
+      "title": "تم"
     },
     "competitions": {
       "title": "تمام مسابقات",
