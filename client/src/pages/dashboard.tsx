@@ -2,21 +2,24 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowUpRight, Clock, Users, Zap, TrendingUp } from "lucide-react";
+import { useI18n } from "@/hooks/useI18n";
 
 export default function Dashboard() {
+  const { t } = useI18n();
+
   return (
     <DashboardLayout>
       <div className="space-y-8">
         <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Welcome back, Alex</h1>
-          <p className="text-muted-foreground">Here's what's happening with your tournaments today.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">{t("dashboard.welcomeBack")}, Alex</h1>
+          <p className="text-muted-foreground">{t("dashboard.statusToday")}</p>
         </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card className="shadow-sm border-border/60">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Winnings</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("dashboard.totalWinnings")}</CardTitle>
               <span className="text-muted-foreground font-sans text-xs">$</span>
             </CardHeader>
             <CardContent>
@@ -29,32 +32,32 @@ export default function Dashboard() {
           </Card>
           <Card className="shadow-sm border-border/60">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Rank</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("dashboard.rank")}</CardTitle>
               <CrownIcon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">#42</div>
-              <p className="text-xs text-muted-foreground mt-1">Top 5% of players</p>
+              <p className="text-xs text-muted-foreground mt-1">{t("dashboard.topPercent")}</p>
             </CardContent>
           </Card>
           <Card className="shadow-sm border-border/60">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Tourneys</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("dashboard.activeTourneys")}</CardTitle>
               <Zap className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">3</div>
-              <p className="text-xs text-muted-foreground mt-1">2 ending soon</p>
+              <p className="text-xs text-muted-foreground mt-1">2 {t("dashboard.endingSoon")}</p>
             </CardContent>
           </Card>
           <Card className="shadow-sm border-border/60">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Win Rate</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("dashboard.winRate")}</CardTitle>
               <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">64%</div>
-              <p className="text-xs text-muted-foreground mt-1">Last 30 days</p>
+              <p className="text-xs text-muted-foreground mt-1">{t("dashboard.lastDays")}</p>
             </CardContent>
           </Card>
         </div>
@@ -62,8 +65,8 @@ export default function Dashboard() {
         {/* Active Tournaments Section */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold tracking-tight">Active Tournaments</h2>
-            <Button variant="ghost" className="text-sm">View All</Button>
+            <h2 className="text-xl font-semibold tracking-tight">{t("dashboard.activeTournaments")}</h2>
+            <Button variant="ghost" className="text-sm">{t("dashboard.viewAll")}</Button>
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -73,29 +76,29 @@ export default function Dashboard() {
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10" />
                   <div className="absolute bottom-3 left-4">
                     <span className="bg-background/90 backdrop-blur text-xs font-semibold px-2 py-1 rounded-full border shadow-sm">
-                      Live Now
+                      {t("dashboard.liveNow")}
                     </span>
                   </div>
                 </div>
                 <CardContent className="p-5">
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">UI Design Challenge 2025</h3>
+                    <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">{t("dashboard.designChallenge")}</h3>
                     <div className="bg-secondary text-secondary-foreground text-xs font-medium px-2 py-1 rounded">
-                      $5k Prize
+                      {t("dashboard.prizeAmount")}
                     </div>
                   </div>
                   <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-                    Design a futuristic dashboard for a fintech application using glassmorphism principles.
+                    {t("dashboard.designDescription")}
                   </p>
                   
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <div className="flex items-center">
                       <Clock className="h-3.5 w-3.5 mr-1.5" />
-                      4h remaining
+                      4h {t("dashboard.remaining")}
                     </div>
                     <div className="flex items-center">
                       <Users className="h-3.5 w-3.5 mr-1.5" />
-                      124 participants
+                      124 {t("dashboard.participants")}
                     </div>
                   </div>
                 </CardContent>

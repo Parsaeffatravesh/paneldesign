@@ -10,10 +10,10 @@ export function Sidebar() {
   const { t } = useI18n();
 
   const navItems = [
-    { icon: LayoutDashboard, label: "Dashboard", href: "/" },
-    { icon: Trophy, label: "My Tournaments", href: "/tournaments" },
-    { icon: Crown, label: "Competitions", href: "/leaderboard" },
-    { icon: User, label: "Profile", href: "/profile" },
+    { icon: LayoutDashboard, label: t("nav.dashboard"), href: "/" },
+    { icon: Trophy, label: t("nav.tournaments"), href: "/tournaments" },
+    { icon: Crown, label: t("nav.competitions"), href: "/leaderboard" },
+    { icon: User, label: t("nav.profile"), href: "/profile" },
   ];
 
   return (
@@ -54,7 +54,7 @@ export function Sidebar() {
         <ThemeSwitcher />
         <button className="flex items-center gap-3 px-3 py-2.5 w-full rounded-md text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-all cursor-pointer">
           <LogOut className="h-5 w-5 stroke-[1.5px]" />
-          {location ? "Log out" : t("common.logout", "Log out")}
+          {t("nav.logout")}
         </button>
       </div>
     </aside>

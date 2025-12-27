@@ -143,7 +143,7 @@ export default function Competitions() {
 
         {filteredCompetitions.length === 0 && (
           <div className="text-center py-12 text-muted-foreground">
-            <p>No competitions found matching your filters.</p>
+            <p>{language === "fa" ? "هیچ مسابقه‌ای با فیلتر انتخاب‌شده پیدا نشد." : "No competitions found matching your filters."}</p>
           </div>
         )}
       </div>

@@ -6,8 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Wallet } from "@/components/Wallet";
+import { useI18n } from "@/hooks/useI18n";
 
 export default function Profile() {
+  const { t } = useI18n();
   return (
     <DashboardLayout>
       <div className="max-w-3xl mx-auto space-y-8">
@@ -20,8 +22,8 @@ export default function Profile() {
             <h1 className="text-2xl md:text-3xl font-bold">John Doe</h1>
             <p className="text-muted-foreground">Senior Product Designer • San Francisco, CA</p>
             <div className="flex gap-2 justify-center md:justify-start">
-              <Button size="sm">Edit Profile</Button>
-              <Button size="sm" variant="outline">Share</Button>
+              <Button size="sm">{t("profile.editProfile")}</Button>
+              <Button size="sm" variant="outline">{t("profile.share")}</Button>
             </div>
           </div>
         </div>
@@ -31,25 +33,25 @@ export default function Profile() {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Personal Information</CardTitle>
+              <CardTitle>{t("profile.personalInfo")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName">First name</Label>
+                  <Label htmlFor="firstName">{t("profile.firstName")}</Label>
                   <Input id="firstName" defaultValue="John" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName">Last name</Label>
+                  <Label htmlFor="lastName">{t("profile.lastName")}</Label>
                   <Input id="lastName" defaultValue="Doe" />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t("profile.email")}</Label>
                 <Input id="email" type="email" defaultValue="john.doe@example.com" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="bio">Bio</Label>
+                <Label htmlFor="bio">{t("profile.bio")}</Label>
                 <Input id="bio" defaultValue="Product Designer with 5+ years of experience." />
               </div>
             </CardContent>
@@ -57,7 +59,7 @@ export default function Profile() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Skills & Expertise</CardTitle>
+              <CardTitle>{t("profile.skills")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
@@ -67,7 +69,7 @@ export default function Profile() {
                    </span>
                  ))}
                  <button className="px-3 py-1 border border-dashed rounded-full text-sm font-medium text-muted-foreground hover:text-foreground">
-                   + Add Skill
+                   + {t("profile.addSkill")}
                  </button>
               </div>
             </CardContent>

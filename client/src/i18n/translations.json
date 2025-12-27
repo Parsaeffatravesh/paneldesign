@@ -76,7 +76,35 @@
       "email": "Email",
       "bio": "Bio",
       "skills": "Skills & Expertise",
-      "addSkill": "Add Skill"
+      "addSkill": "Add Skill",
+      "editProfile": "Edit Profile",
+      "share": "Share"
+    },
+    "dashboard": {
+      "welcomeBack": "Welcome back",
+      "statusToday": "Here's what's happening with your tournaments today",
+      "totalWinnings": "Total Winnings",
+      "rank": "Rank",
+      "activeTourneys": "Active Tourneys",
+      "winRate": "Win Rate",
+      "endingSoon": "ending soon",
+      "lastDays": "Last 30 days",
+      "topPercent": "Top 5% of players",
+      "activeTournaments": "Active Tournaments",
+      "viewAll": "View All",
+      "liveNow": "Live Now",
+      "designChallenge": "UI Design Challenge 2025",
+      "prizeAmount": "$5k Prize",
+      "designDescription": "Design a futuristic dashboard for a fintech application using glassmorphism principles",
+      "remaining": "remaining",
+      "participants": "participants"
+    },
+    "nav": {
+      "dashboard": "Dashboard",
+      "tournaments": "My Tournaments",
+      "competitions": "Competitions",
+      "profile": "Profile",
+      "logout": "Log out"
     }
   },
   "fa": {
@@ -156,7 +184,35 @@
       "email": "ایمیل",
       "bio": "بیوگرافی",
       "skills": "مهارت‌ها",
-      "addSkill": "افزودن مهارت"
+      "addSkill": "افزودن مهارت",
+      "editProfile": "ویرایش پروفایل",
+      "share": "اشتراک‌گذاری"
+    },
+    "dashboard": {
+      "welcomeBack": "خوش‌آمدید",
+      "statusToday": "وضعیت مسابقات شما در این روز",
+      "totalWinnings": "کل برنده‌شدگی‌ها",
+      "rank": "رتبه",
+      "activeTourneys": "مسابقات فعال",
+      "winRate": "درصد برنده‌شدگی",
+      "endingSoon": "به‌زودی پایان",
+      "lastDays": "30 روز گذشته",
+      "topPercent": "5 درصد برتر بازیکنان",
+      "activeTournaments": "مسابقات فعال",
+      "viewAll": "مشاهده همه",
+      "liveNow": "در حال برگزاری",
+      "designChallenge": "چالش طراحی رابط‌کاربری 2025",
+      "prizeAmount": "جایزه 5000 دلار",
+      "designDescription": "یک داشبورد آینده‌نگرانه برای برنامه‌ای مالی با استفاده از اصول glassmorphism طراحی کنید",
+      "remaining": "باقی‌مانده",
+      "participants": "شرکت‌کننده"
+    },
+    "nav": {
+      "dashboard": "داشبورد",
+      "tournaments": "مسابقات من",
+      "competitions": "مسابقات",
+      "profile": "پروفایل",
+      "logout": "خروج"
     }
   }
 }
