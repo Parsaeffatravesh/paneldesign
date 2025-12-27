@@ -1,6 +1,7 @@
 import { useLocation } from "wouter";
 import { LayoutDashboard, Trophy, Crown, User, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useMemo } from "react";
 import { LanguageSwitcher } from "../LanguageSwitcher";
 import { ThemeSwitcher } from "../ThemeSwitcher";
 import { useI18n } from "@/hooks/useI18n";
@@ -9,12 +10,12 @@ export function Sidebar() {
   const [location] = useLocation();
   const { t } = useI18n();
 
-  const navItems = [
+  const navItems = useMemo(() => [
     { icon: LayoutDashboard, label: t("nav.dashboard"), href: "/" },
     { icon: Trophy, label: t("nav.tournaments"), href: "/tournaments" },
     { icon: Crown, label: t("nav.competitions"), href: "/leaderboard" },
     { icon: User, label: t("nav.profile"), href: "/profile" },
-  ];
+  ], [t]);
 
   return (
     <aside className="hidden md:flex flex-col w-64 border-r bg-sidebar h-screen fixed left-0 top-0 z-40">

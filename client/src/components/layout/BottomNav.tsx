@@ -1,16 +1,19 @@
 import { useLocation } from "wouter";
 import { LayoutDashboard, Trophy, Crown, User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useMemo } from "react";
+import { useI18n } from "@/hooks/useI18n";
 
 export function BottomNav() {
   const [location] = useLocation();
+  const { t } = useI18n();
 
-  const navItems = [
-    { icon: LayoutDashboard, label: "Home", href: "/" },
-    { icon: Trophy, label: "Tournaments", href: "/tournaments" },
-    { icon: Crown, label: "Leaderboard", href: "/leaderboard" },
-    { icon: User, label: "Profile", href: "/profile" },
-  ];
+  const navItems = useMemo(() => [
+    { icon: LayoutDashboard, label: t("nav.dashboard"), href: "/" },
+    { icon: Trophy, label: t("nav.tournaments"), href: "/tournaments" },
+    { icon: Crown, label: t("nav.competitions"), href: "/competitions" },
+    { icon: User, label: t("nav.profile"), href: "/profile" },
+  ], [t]);
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 border-t bg-background/80 backdrop-blur-md z-50 pb-safe">

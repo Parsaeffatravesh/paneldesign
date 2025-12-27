@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { useI18n } from "@/hooks/useI18n";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardContent } from "@/components/ui/card";
@@ -22,7 +23,7 @@ const mockTournaments = {
   ],
 };
 
-export default function MyTournaments() {
+const MyTournaments = memo(function MyTournaments() {
   const { t } = useI18n();
   
   const allTournaments = [
@@ -118,4 +119,8 @@ export default function MyTournaments() {
       </div>
     </DashboardLayout>
   );
-}
+});
+
+MyTournaments.displayName = "MyTournaments";
+
+export default MyTournaments;

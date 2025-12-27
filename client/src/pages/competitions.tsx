@@ -1,11 +1,10 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, memo, useEffect } from "react";
 import { useI18n } from "@/hooks/useI18n";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { CompetitionCard } from "@/components/CompetitionCard";
 import { CompetitionFilters } from "@/components/CompetitionFilters";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import { useEffect } from "react";
 
 const mockCompetitions = [
   {
@@ -74,7 +73,7 @@ interface Filters {
   sortBy: "newest" | "prize" | "participants";
 }
 
-export default function Competitions() {
+const Competitions = memo(function Competitions() {
   const { t, language } = useI18n();
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState<Filters>({
@@ -84,11 +83,6 @@ export default function Competitions() {
     minPrize: 0,
     sortBy: "newest",
   });
-
-  // RTL support
-  useEffect(() => {
-    document.documentElement.dir = language === "fa" ? "rtl" : "ltr";
-  }, [language]);
 
   const filteredCompetitions = useMemo(() => {
     let result = mockCompetitions.filter((comp) => {
@@ -149,4 +143,8 @@ export default function Competitions() {
       </div>
     </DashboardLayout>
   );
-}
+});
+
+Competitions.displayName = "Competitions";
+
+export default Competitions;

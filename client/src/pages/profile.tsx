@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -8,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Wallet } from "@/components/Wallet";
 import { useI18n } from "@/hooks/useI18n";
 
-export default function Profile() {
+const Profile = memo(function Profile() {
   const { t } = useI18n();
   return (
     <DashboardLayout>
@@ -80,4 +81,8 @@ export default function Profile() {
       </div>
     </DashboardLayout>
   );
-}
+});
+
+Profile.displayName = "Profile";
+
+export default Profile;
