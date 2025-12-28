@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 export type Theme = "light" | "dark" | "legendary";
 
@@ -10,18 +10,38 @@ export function useTheme() {
     return stored || "light";
   });
 
+  const updateTheme = useCallback((newTheme: Theme) => {
+    const root = document.documentElement;
+    
+    if (!root.classList.contains("theme-transition")) {
+      root.classList.add("theme-transition");
+    }
+
+    root.setAttribute("data-theme", newTheme);
+    localStorage.setItem(THEME_STORAGE_KEY, newTheme);
+
+    root.classList.remove("light", "dark", "legendary");
+    if (newTheme !== "light") {
+      root.classList.add(newTheme);
+    }
+
+    setTheme(newTheme);
+
+    setTimeout(() => {
+      root.classList.remove("theme-transition");
+    }, 350);
+  }, []);
+
   useEffect(() => {
     const root = document.documentElement;
     root.setAttribute("data-theme", theme);
     localStorage.setItem(THEME_STORAGE_KEY, theme);
 
-    // Remove all theme classes first
     root.classList.remove("light", "dark", "legendary");
-    // Add the new theme class
     if (theme !== "light") {
       root.classList.add(theme);
     }
-  }, [theme]);
+  }, []);
 
-  return { theme, setTheme };
+  return { theme, setTheme: updateTheme };
 }
