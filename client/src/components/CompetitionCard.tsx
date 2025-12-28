@@ -119,100 +119,87 @@ const CompetitionCard = memo(function CompetitionCard(props: CompetitionCardProp
 
   return (
     <div className="w-full max-w-[520px]" data-testid="card-competition">
-      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-zinc-950/70 shadow-[0_25px_80px_-35px_rgba(0,0,0,0.9)] backdrop-blur-xl transition-all duration-200 hover:shadow-[0_35px_100px_-25px_rgba(0,0,0,0.95)]">
-        {/* glow background */}
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -left-28 -top-28 h-72 w-72 rounded-full bg-fuchsia-500/20 blur-3xl" />
-          <div className="absolute -right-32 -bottom-32 h-72 w-72 rounded-full bg-sky-500/20 blur-3xl" />
-          <div className="absolute inset-0 bg-[radial-gradient(1200px_circle_at_20%_0%,rgba(255,255,255,0.10),transparent_40%),radial-gradient(900px_circle_at_90%_70%,rgba(255,255,255,0.07),transparent_35%)]" />
-        </div>
-
-        <div className="relative p-5 sm:p-6">
+      <div className="relative overflow-hidden rounded-2xl border border-white/8 bg-white/5 backdrop-blur-sm transition-all duration-200 hover:bg-white/7 hover:border-white/12">
+        <div className="p-5 sm:p-6">
           {/* Header */}
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium transition-colors duration-200 ${badgeClass}`}>
+          <div className="flex items-start justify-between gap-4 mb-4">
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <span className={`inline-block text-[11px] font-medium px-2.5 py-1 rounded-md transition-colors ${badgeClass}`}>
                   {badge}
                 </span>
-                <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium transition-colors duration-200 ${marketPillClass}`}>
-                  بازار: {marketType}
+                <span className={`inline-block text-[11px] font-medium px-2.5 py-1 rounded-md transition-colors ${marketPillClass}`}>
+                  {marketType}
                 </span>
-                {maxParticipants ? (
-                  <span className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white/90 transition-colors duration-200">
-                    ظرفیت: {participants}/{maxParticipants}
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white/90 transition-colors duration-200">
-                    شرکت‌کننده: {participants}
-                  </span>
-                )}
               </div>
-
-              <h3 className="mt-3 truncate text-lg font-semibold text-white sm:text-xl">
+              <h3 className="text-lg font-semibold text-white truncate">
                 {title}
               </h3>
-
-              <p className="mt-1 text-sm text-white/60">
-                {isUpcoming ? "زمان باقی‌مانده تا شروع" : isLive ? "زمان باقی‌مانده تا پایان" : "این مسابقه پایان یافته است"}
+              <p className="text-xs text-white/50 mt-1">
+                {isUpcoming ? "شروع‌ می‌شود در" : isLive ? "پایان‌ می‌یابد در" : "پایان‌یافته"}
               </p>
             </div>
-
-            {/* Entry Fee */}
-            <div className="shrink-0 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-right transition-all duration-200">
-              <p className="text-xs text-white/60">ورودی</p>
-              <p className="mt-1 text-base font-semibold text-white">
+            <div className="shrink-0 text-right">
+              <p className="text-xs text-white/50">هزینه</p>
+              <p className="text-base font-semibold text-white">
                 {formatMoney(entryFee, entryFeeCurrency)}
               </p>
             </div>
           </div>
 
           {/* Countdown */}
-          <div className="mt-5 grid grid-cols-4 gap-2 sm:gap-3">
+          <div className="grid grid-cols-4 gap-2 mb-4">
             <TimeBox label="روز" value={pad2(countdown.days)} />
             <TimeBox label="ساعت" value={pad2(countdown.hours)} />
             <TimeBox label="دقیقه" value={pad2(countdown.minutes)} />
             <TimeBox label="ثانیه" value={pad2(countdown.seconds)} />
           </div>
 
-          {/* Details */}
-          <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <InfoRow label="شروع" value={formatDateTime(startsAt)} />
-            <InfoRow label="پایان" value={formatDateTime(endsAt)} />
-            <InfoRow label="مدت مسابقه" value={durationLabel} />
-            <InfoRow
-              label="مبلغ جایزه"
-              value={
-                <PrizeHover
-                  prizePool={prizePool}
-                  prizeCurrency={prizeCurrency}
-                  breakdown={prizeBreakdown}
-                />
-              }
-            />
-          </div>
-
-          {/* CTA */}
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="text-xs text-white/55">
-              با کلیک روی Join قوانین و شرایط مسابقه نمایش داده می‌شود.
+          {/* Details - Minimalist Grid */}
+          <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
+            <div>
+              <p className="text-xs text-white/50 mb-1">شروع</p>
+              <p className="text-white/80 line-clamp-2">{formatDateTime(startsAt)}</p>
             </div>
-
-            <button
-              onClick={onJoin}
-              disabled={joinDisabled}
-              data-testid="button-join-competition"
-              className={[
-                "inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition-all duration-200",
-                "shadow-[0_12px_40px_-18px_rgba(0,0,0,0.9)]",
-                joinDisabled
-                  ? "cursor-not-allowed bg-white/10 text-white/40"
-                  : "bg-white text-zinc-950 hover:-translate-y-0.5 active:translate-y-0",
-              ].join(" ")}
-            >
-              Join مسابقه
-            </button>
+            <div>
+              <p className="text-xs text-white/50 mb-1">پایان</p>
+              <p className="text-white/80 line-clamp-2">{formatDateTime(endsAt)}</p>
+            </div>
+            <div>
+              <p className="text-xs text-white/50 mb-1">مدت</p>
+              <p className="text-white/80 font-medium">{durationLabel}</p>
+            </div>
+            <div>
+              <p className="text-xs text-white/50 mb-1">جایزه</p>
+              <PrizeHover
+                prizePool={prizePool}
+                prizeCurrency={prizeCurrency}
+                breakdown={prizeBreakdown}
+              />
+            </div>
           </div>
+
+          {/* Stats Bar */}
+          <div className="flex items-center justify-between text-xs text-white/50 mb-4 py-3 border-t border-white/5">
+            <span>{participants} شرکت‌کننده</span>
+            {maxParticipants && <span>ظرفیت: {maxParticipants}</span>}
+            <span>جایزه: {formatMoney(prizePool, prizeCurrency)}</span>
+          </div>
+
+          {/* CTA Button */}
+          <button
+            onClick={onJoin}
+            disabled={joinDisabled}
+            data-testid="button-join-competition"
+            className={[
+              "w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
+              joinDisabled
+                ? "cursor-not-allowed bg-white/5 text-white/40"
+                : "bg-white text-zinc-950 hover:bg-white/95 active:bg-white/90",
+            ].join(" ")}
+          >
+            {joinDisabled ? "مسابقه پایان‌یافته" : "شرکت در مسابقه"}
+          </button>
         </div>
       </div>
     </div>
@@ -223,27 +210,13 @@ CompetitionCard.displayName = "CompetitionCard";
 
 function TimeBox({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-3 text-center transition-all duration-200">
-      <div className="text-xl font-bold tracking-wider text-white sm:text-2xl">{value}</div>
-      <div className="mt-1 text-[11px] text-white/55">{label}</div>
+    <div className="rounded-lg border border-white/8 bg-white/5 p-2.5 text-center transition-all duration-200 hover:bg-white/7">
+      <div className="text-base font-bold text-white">{value}</div>
+      <div className="text-[10px] text-white/50 mt-0.5">{label}</div>
     </div>
   );
 }
 
-function InfoRow({
-  label,
-  value,
-}: {
-  label: string;
-  value: React.ReactNode;
-}) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-4 transition-all duration-200">
-      <div className="text-xs text-white/60">{label}</div>
-      <div className="mt-1 text-sm font-medium text-white">{value}</div>
-    </div>
-  );
-}
 
 function PrizeHover({
   prizePool,
@@ -258,31 +231,24 @@ function PrizeHover({
 
   return (
     <div className="relative inline-block">
-      <div className="group inline-flex items-center gap-2">
-        <span className="font-semibold">
+      <div className="group cursor-help">
+        <span className="font-medium text-white/80 hover:text-white transition-colors">
           {formatMoney(prizePool, prizeCurrency)}
-        </span>
-        <span className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] text-white/70 transition-colors duration-200">
-          hover
         </span>
 
         {/* Tooltip */}
         <div
           className={[
-            "pointer-events-none absolute right-0 top-full z-20 mt-2 w-64 translate-y-1 opacity-0",
-            "rounded-2xl border border-white/10 bg-zinc-950/90 p-4 shadow-2xl backdrop-blur-xl",
+            "pointer-events-none absolute right-0 bottom-full z-20 mb-2 w-56 translate-y-1 opacity-0",
+            "rounded-lg border border-white/10 bg-white/10 p-3 backdrop-blur-sm",
             "transition duration-200 group-hover:translate-y-0 group-hover:opacity-100",
           ].join(" ")}
         >
-          <div className="text-xs text-white/60">تفکیک جوایز</div>
-          <div className="mt-3 space-y-2 text-sm">
-            <Row k="نفر اول" v={formatMoney(breakdown.first, currency)} />
-            <Row k="نفر دوم" v={formatMoney(breakdown.second, currency)} />
-            <Row k="نفر سوم" v={formatMoney(breakdown.third, currency)} />
-          </div>
-
-          <div className="mt-3 text-[11px] text-white/50">
-            * مبالغ نمونه هستند و می‌توانند بر اساس قوانین مسابقه تغییر کنند.
+          <div className="text-xs text-white/60 mb-2">تفکیک جوایز</div>
+          <div className="space-y-1 text-xs">
+            <Row k="اول" v={formatMoney(breakdown.first, currency)} />
+            <Row k="دوم" v={formatMoney(breakdown.second, currency)} />
+            <Row k="سوم" v={formatMoney(breakdown.third, currency)} />
           </div>
         </div>
       </div>
@@ -293,8 +259,8 @@ function PrizeHover({
 function Row({ k, v }: { k: string; v: string }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <span className="text-white/75">{k}</span>
-      <span className="font-semibold text-white">{v}</span>
+      <span className="text-white/60">{k}</span>
+      <span className="font-medium text-white">{v}</span>
     </div>
   );
 }
