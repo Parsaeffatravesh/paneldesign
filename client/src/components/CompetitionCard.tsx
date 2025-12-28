@@ -92,15 +92,6 @@ const CompetitionCard = memo(function CompetitionCard(props: CompetitionCardProp
 
   const countdown = isUpcoming ? diffParts(untilStart) : diffParts(untilEnd);
 
-  const durationMs = Math.max(0, endsMs - startsMs);
-  const durationParts = diffParts(durationMs);
-  const durationLabel =
-    durationMs > 0
-      ? `${durationParts.days ? `${durationParts.days} روز ` : ""}${pad2(
-          durationParts.hours
-        )}:${pad2(durationParts.minutes)}`
-      : "—";
-
   const badge = isUpcoming ? "به‌زودی" : isLive ? "در حال برگزاری" : "پایان‌یافته";
 
   const badgeClass =
@@ -117,89 +108,131 @@ const CompetitionCard = memo(function CompetitionCard(props: CompetitionCardProp
 
   const joinDisabled = isEnded;
 
+  const startDate = new Date(startsAt);
+  const endDate = new Date(endsAt);
+  const startMonth = startDate.toLocaleString("fa-IR", { month: "short" }).toUpperCase();
+  const startDay = String(startDate.getDate()).padStart(2, "0");
+  const startTime = `${String(startDate.getHours()).padStart(2, "0")}:${String(startDate.getMinutes()).padStart(2, "0")}`;
+  const endMonth = endDate.toLocaleString("fa-IR", { month: "short" }).toUpperCase();
+  const endDay = String(endDate.getDate()).padStart(2, "0");
+  const endTime = `${String(endDate.getHours()).padStart(2, "0")}:${String(endDate.getMinutes()).padStart(2, "0")}`;
+
   return (
-    <div className="w-full max-w-[520px]" data-testid="card-competition">
-      <div className="rounded-2xl border border-border bg-card shadow-sm transition-all duration-200 hover:shadow-md dark:border-white/10 dark:bg-white/5">
-        <div className="p-5 sm:p-6">
-          {/* Header */}
-          <div className="flex items-start justify-between gap-4 mb-4">
+    <div className="w-full" data-testid="card-competition">
+      <div className="rounded-lg border border-border/40 bg-card/50 shadow-sm transition-all duration-300 hover:shadow-md dark:border-white/10 dark:bg-white/5 backdrop-blur-sm">
+        <div className="p-4 sm:p-5">
+          {/* Title and ID Header */}
+          <div className="flex items-start justify-between gap-3 mb-4">
             <div className="flex-1 min-w-0">
-              <div className="flex flex-wrap items-center gap-2 mb-2">
-                <span className={`inline-block text-[11px] font-medium px-2.5 py-1 rounded-md transition-colors ${badgeClass}`}>
-                  {badge}
-                </span>
-                <span className={`inline-block text-[11px] font-medium px-2.5 py-1 rounded-md transition-colors ${marketPillClass}`}>
-                  {marketType}
-                </span>
-              </div>
-              <h3 className="text-lg font-semibold text-foreground truncate">
+              <h3 className="text-lg sm:text-xl font-bold text-foreground truncate">
                 {title}
               </h3>
-              <p className="text-xs text-muted-foreground mt-1">
-                {isUpcoming ? "شروع‌ می‌شود در" : isLive ? "پایان‌ می‌یابد در" : "پایان‌یافته"}
+              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+                ID{Math.random().toString(36).substr(2, 6).toUpperCase()}
               </p>
             </div>
             <div className="shrink-0 text-right">
-              <p className="text-xs text-muted-foreground">هزینه</p>
-              <p className="text-base font-semibold text-foreground">
-                {formatMoney(entryFee, entryFeeCurrency)}
-              </p>
+              <div className="inline-block px-3 py-1 rounded-md text-[10px] sm:text-xs font-medium" style={{backgroundColor: 'rgba(0, 255, 255, 0.15)', color: '#00FFFF'}}>
+                {badge}
+              </div>
             </div>
           </div>
 
-          {/* Countdown */}
-          <div className="grid grid-cols-4 gap-2 mb-4">
-            <TimeBox label="روز" value={pad2(countdown.days)} />
-            <TimeBox label="ساعت" value={pad2(countdown.hours)} />
-            <TimeBox label="دقیقه" value={pad2(countdown.minutes)} />
-            <TimeBox label="ثانیه" value={pad2(countdown.seconds)} />
+          {/* Main Content Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+            {/* Left: Date/Time Info */}
+            <div className="col-span-1">
+              <div className="space-y-3">
+                {/* Start Time Box */}
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <div className="text-[10px] sm:text-xs text-muted-foreground font-medium mb-1">{startMonth} | شروع</div>
+                    <div className="bg-muted/40 rounded-md p-2 border border-border/40">
+                      <div className="text-sm sm:text-base font-bold text-foreground">{startDay}</div>
+                      <div className="text-[10px] text-muted-foreground">{startTime}</div>
+                    </div>
+                  </div>
+                </div>
+                {/* Arrow */}
+                <div className="text-center">
+                  <div className="text-muted-foreground text-sm">→</div>
+                </div>
+                {/* End Time Box */}
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <div className="text-[10px] sm:text-xs text-muted-foreground font-medium mb-1">{endMonth} | پایان</div>
+                    <div className="bg-muted/40 rounded-md p-2 border border-border/40">
+                      <div className="text-sm sm:text-base font-bold text-foreground">{endDay}</div>
+                      <div className="text-[10px] text-muted-foreground">{endTime}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Center: Prize and Traders */}
+            <div className="col-span-1 flex flex-col justify-between">
+              <div>
+                <div className="text-[10px] sm:text-xs text-muted-foreground font-medium mb-2">جایزه کل</div>
+                <div className="flex items-center gap-2">
+                  <div className="text-2xl sm:text-3xl">🏆</div>
+                  <PrizeHover
+                    prizePool={prizePool}
+                    prizeCurrency={prizeCurrency}
+                    breakdown={prizeBreakdown}
+                  />
+                </div>
+              </div>
+              <div>
+                <div className="text-[10px] sm:text-xs text-muted-foreground font-medium mb-2">معامله‌گران</div>
+                <div className="flex items-center gap-2">
+                  <div className="text-2xl sm:text-3xl">👥</div>
+                  <span className="text-sm sm:text-base font-bold text-foreground">{participants}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Countdown and Button */}
+            <div className="col-span-1 flex flex-col justify-between">
+              {/* Countdown Timer */}
+              <div className="text-right">
+                <div className="text-[10px] sm:text-xs text-muted-foreground font-medium mb-2">شروع در</div>
+                <div className="space-y-1">
+                  {countdown.days > 0 && (
+                    <div className="text-xs sm:text-sm font-semibold text-red-400">
+                      {countdown.days}d : {pad2(countdown.hours)}h
+                    </div>
+                  )}
+                  {countdown.days === 0 && (
+                    <div className="text-xs sm:text-sm font-semibold text-red-400">
+                      {pad2(countdown.hours)}h : {pad2(countdown.minutes)}m : {pad2(countdown.seconds)}s
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Join Button */}
+              <button
+                onClick={onJoin}
+                disabled={joinDisabled}
+                data-testid="button-join-competition"
+                className={[
+                  "w-full px-3 py-2 sm:py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 mt-3",
+                  joinDisabled
+                    ? "cursor-not-allowed bg-muted text-muted-foreground"
+                    : "bg-cyan-500 text-black hover:bg-cyan-400 active:bg-cyan-600",
+                ].join(" ")}
+              >
+                {joinDisabled ? "پایان‌یافته" : "شرکت"}
+              </button>
+            </div>
           </div>
 
-          {/* Details - Minimalist Grid */}
-          <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
-            <div>
-              <p className="text-xs text-muted-foreground mb-1">شروع</p>
-              <p className="text-foreground/80 line-clamp-2">{formatDateTime(startsAt)}</p>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground mb-1">پایان</p>
-              <p className="text-foreground/80 line-clamp-2">{formatDateTime(endsAt)}</p>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground mb-1">مدت</p>
-              <p className="text-foreground/80 font-medium">{durationLabel}</p>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground mb-1">جایزه</p>
-              <PrizeHover
-                prizePool={prizePool}
-                prizeCurrency={prizeCurrency}
-                breakdown={prizeBreakdown}
-              />
-            </div>
-          </div>
-
-          {/* Stats Bar */}
-          <div className="flex items-center justify-between text-xs text-muted-foreground mb-4 py-3 border-t border-border">
+          {/* Bottom Info Bar */}
+          <div className="pt-3 border-t border-border/40 flex items-center justify-between text-[10px] sm:text-xs text-muted-foreground gap-2">
             <span>{participants} شرکت‌کننده</span>
-            {maxParticipants && <span>ظرفیت: {maxParticipants}</span>}
-            <span>جایزه: {formatMoney(prizePool, prizeCurrency)}</span>
+            <span>هزینه: {formatMoney(entryFee, entryFeeCurrency)}</span>
           </div>
-
-          {/* CTA Button */}
-          <button
-            onClick={onJoin}
-            disabled={joinDisabled}
-            data-testid="button-join-competition"
-            className={[
-              "w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
-              joinDisabled
-                ? "cursor-not-allowed bg-muted text-muted-foreground"
-                : "bg-primary text-primary-foreground hover:opacity-90 active:opacity-95",
-            ].join(" ")}
-          >
-            {joinDisabled ? "مسابقه پایان‌یافته" : "شرکت در مسابقه"}
-          </button>
         </div>
       </div>
     </div>

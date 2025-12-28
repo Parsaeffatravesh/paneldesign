@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { ArrowUpRight, Clock, Users, Zap, TrendingUp } from "lucide-react";
 import { useI18n } from "@/hooks/useI18n";
+import { MinimalThemeToggle } from "@/components/MinimalThemeToggle";
 
 const CrownIcon = memo((props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -32,9 +33,12 @@ const Dashboard = memo(function Dashboard() {
   return (
     <DashboardLayout>
       <div className="space-y-8">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">{t("dashboard.welcomeBack")}, Alex</h1>
-          <p className="text-muted-foreground">{t("dashboard.statusToday")}</p>
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col gap-2 flex-1">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">{t("dashboard.welcomeBack")}, Alex</h1>
+            <p className="text-muted-foreground">{t("dashboard.statusToday")}</p>
+          </div>
+          <MinimalThemeToggle />
         </div>
 
         {/* Stats Grid */}
