@@ -45,23 +45,9 @@ function diffParts(ms: number) {
   return { days, hours, minutes, seconds, totalSeconds };
 }
 
-function ArrowIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
-      <path
-        d="M10 7l6 5-6 5"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 function TrophyIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+    <svg viewBox="0 0 24 24" fill="none" {...props}>
       <path
         d="M7 4h10v3a5 5 0 0 1-10 0V4Z"
         stroke="currentColor"
@@ -104,7 +90,7 @@ function TrophyIcon(props: React.SVGProps<SVGSVGElement>) {
 
 function UsersIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+    <svg viewBox="0 0 24 24" fill="none" {...props}>
       <path
         d="M16 19c0-2.2-1.8-4-4-4s-4 1.8-4 4"
         stroke="currentColor"
@@ -134,7 +120,7 @@ function UsersIcon(props: React.SVGProps<SVGSVGElement>) {
 
 function TicketCoinIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+    <svg viewBox="0 0 24 24" fill="none" {...props}>
       <path
         d="M4 8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1a2 2 0 0 0 0 4v1a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-1a2 2 0 0 0 0-4V8Z"
         stroke="currentColor"
@@ -158,47 +144,49 @@ function TicketCoinIcon(props: React.SVGProps<SVGSVGElement>) {
 
 function PlayIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+    <svg viewBox="0 0 24 24" fill="none" {...props}>
       <path d="M10 8l7 4-7 4V8Z" fill="currentColor" />
     </svg>
   );
 }
 
+function ArrowIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" {...props}>
+      <path
+        d="M10 7l6 5-6 5"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function TimeBox({
-  label,
   month,
   day,
+  label,
   time,
 }: {
-  label: string;
   month: string;
   day: string;
+  label: string;
   time: string;
 }) {
   return (
-    <div className="pill-shadow soft-border flex overflow-hidden rounded-[14px] bg-[#0d1030]">
-      <div className="px-4 py-3">
-        <div className="text-[12px] font-semibold tracking-[.18em] text-white/45">
-          {month}
-        </div>
-        <div className="mt-[2px] text-[30px] font-semibold leading-[1] text-white/92">
-          {day}
-        </div>
-      </div>
-      <div className="w-px bg-white/10" />
-      <div className="px-4 py-3">
-        <div className="text-[14px] font-medium text-white/45">{label}</div>
-        <div className="mt-[2px] text-[30px] font-semibold leading-[1] text-white/92">
-          {time}
-        </div>
-      </div>
+    <div className="bg-[#1a1f3a] border border-white/10 rounded-lg px-3 py-2 text-center">
+      <div className="text-[11px] text-white/40 font-medium">{month} | {label}</div>
+      <div className="text-xl font-bold text-white/90 mt-0.5">{day}</div>
+      <div className="text-xs text-white/40 mt-1">{time}</div>
     </div>
   );
 }
 
-function CountdownPill({ value }: { value: string }) {
+function CountdownUnit({ value }: { value: string }) {
   return (
-    <div className="pill-shadow soft-border rounded-[10px] bg-[#221b2f] px-4 py-2 text-[18px] font-semibold text-[#ff6478]">
+    <div className="bg-[#2a1a2f] border border-white/10 rounded px-2 py-1 text-sm font-semibold text-[#ff6478]">
       {value}
     </div>
   );
@@ -207,49 +195,43 @@ function CountdownPill({ value }: { value: string }) {
 function Badge({
   value,
   unit,
-  variant,
+  isCircle,
 }: {
   value: string;
   unit: string;
-  variant: "circle" | "square";
+  isCircle: boolean;
 }) {
-  if (variant === "square") {
+  if (isCircle) {
+    const ticks = Array.from({ length: 12 }, (_, i) => i * 30);
     return (
-      <div className="relative grid h-14 w-14 place-items-center rounded-[10px] soft-border bg-[#0d1030]">
-        <div className="text-[26px] font-semibold text-white/92 leading-[1]">
-          {value}
+      <div className="relative w-12 h-12 bg-[#1a1f3a] border border-white/10 rounded-full flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-lg font-bold text-white/90 leading-none">{value}</div>
+          <div className="text-xs font-semibold text-white/40 mt-0.5">{unit}</div>
         </div>
-        <div className="-mt-1 text-[14px] font-semibold text-white/55 leading-[1]">
-          {unit}
+        <div className="absolute inset-0 pointer-events-none">
+          {ticks.map((deg) => (
+            <span
+              key={deg}
+              className="absolute left-1/2 top-1/2 h-[5px] w-[1px] bg-white/40 rounded"
+              style={{
+                transform: `translate(-50%,-50%) rotate(${deg}deg) translateY(-19px)`,
+              }}
+            />
+          ))}
         </div>
-        <span className="absolute left-2 top-2 h-[5px] w-[5px] rounded-sm bg-white/70" />
-        <span className="absolute right-2 top-2 h-[5px] w-[5px] rounded-sm bg-white/70" />
       </div>
     );
   }
 
-  const ticks = Array.from({ length: 12 }, (_, i) => i * 30);
-
   return (
-    <div className="relative grid h-14 w-14 place-items-center rounded-full soft-border bg-[#0d1030]">
-      <div className="text-[26px] font-semibold text-white/92 leading-[1]">
-        {value}
+    <div className="relative w-12 h-12 bg-[#1a1f3a] border border-white/10 rounded flex items-center justify-center">
+      <div className="text-center">
+        <div className="text-lg font-bold text-white/90 leading-none">{value}</div>
+        <div className="text-xs font-semibold text-white/40 mt-0.5">{unit}</div>
       </div>
-      <div className="-mt-1 text-[14px] font-semibold text-white/55 leading-[1]">
-        {unit}
-      </div>
-
-      <div className="pointer-events-none absolute inset-0">
-        {ticks.map((deg) => (
-          <span
-            key={deg}
-            className="absolute left-1/2 top-1/2 h-[6px] w-[2px] rounded bg-white/60"
-            style={{
-              transform: `translate(-50%,-50%) rotate(${deg}deg) translateY(-22px)`,
-            }}
-          />
-        ))}
-      </div>
+      <span className="absolute left-1.5 top-1.5 w-1 h-1 rounded-full bg-white/50" />
+      <span className="absolute right-1.5 top-1.5 w-1 h-1 rounded-full bg-white/50" />
     </div>
   );
 }
@@ -260,12 +242,10 @@ const CompetitionCard = memo(function CompetitionCard(props: CompetitionCardProp
     entryFee,
     entryFeeCurrency = "USDT",
     participants,
-    marketType,
     startsAt,
     endsAt,
     prizePool,
     prizeCurrency = "USDT",
-    prizeBreakdown,
     onJoin,
   } = props;
 
@@ -280,13 +260,7 @@ const CompetitionCard = memo(function CompetitionCard(props: CompetitionCardProp
   }, []);
 
   const untilStart = startsMs - now;
-  const untilEnd = endsMs - now;
-
-  const isUpcoming = untilStart > 0;
-  const isLive = untilStart <= 0 && untilEnd > 0;
-  const isEnded = untilEnd <= 0;
-
-  const countdown = isUpcoming ? diffParts(untilStart) : diffParts(untilEnd);
+  const countdown = diffParts(untilStart);
 
   const startDate = new Date(startsAt);
   const endDate = new Date(endsAt);
@@ -298,139 +272,101 @@ const CompetitionCard = memo(function CompetitionCard(props: CompetitionCardProp
   const endTime = `${String(endDate.getHours()).padStart(2, "0")}:${String(endDate.getMinutes()).padStart(2, "0")}`;
 
   const durationMs = Math.max(0, endsMs - startsMs);
-  const durationParts = diffParts(durationMs);
-  const duration = Math.ceil(durationMs / (3600 * 1000));
-  const durationUnit = duration >= 24 ? "D" : "H";
-  const durationValue = duration >= 24 ? Math.ceil(duration / 24) : duration;
+  const durationHours = Math.ceil(durationMs / (3600 * 1000));
+  const isCircleBadge = durationHours < 24;
+  const badgeValue = isCircleBadge ? String(durationHours) : String(Math.ceil(durationHours / 24));
+  const badgeUnit = isCircleBadge ? "H" : "D";
 
-  const badgeVariant = durationUnit === "D" ? "square" : "circle";
-
-  const prizeText = prizePool > 0 ? formatMoney(prizePool, prizeCurrency) : "No prize";
-  const tradersText = participants > 0 ? String(participants) : "-";
+  const isEnded = untilStart <= 0;
 
   return (
     <section
-      className="card-glow soft-border rounded-[26px] bg-gradient-to-b from-[#151a3d] to-[#0f1330] px-5 py-6 sm:px-7 sm:py-7"
+      className="bg-[#1a1f3a] border border-white/10 rounded-2xl px-6 py-5 max-w-4xl"
       data-testid="card-competition"
     >
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-10">
-        {/* LEFT */}
-        <div className="min-w-0">
-          <div className="text-[38px] sm:text-[46px] font-semibold tracking-tight text-white/95 leading-[1]">
-            {title}
+      {/* Top Row: Title + Badge */}
+      <div className="flex items-start justify-between mb-5">
+        <div>
+          <h3 className="text-3xl font-bold text-white/95">{title}</h3>
+          <p className="text-sm text-white/35 mt-1">ID85513</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Badge
+            value={badgeValue}
+            unit={badgeUnit}
+            isCircle={isCircleBadge}
+          />
+          <div className="w-10 h-10 bg-[#1a1f3a] border border-white/10 rounded flex items-center justify-center">
+            <PlayIcon className="w-5 h-5 text-white/60" />
           </div>
-          <div className="mt-1 text-[20px] sm:text-[24px] font-medium tracking-wide text-white/35">
-            ID{Math.random().toString(36).substr(2, 6).toUpperCase()}
+        </div>
+      </div>
+
+      {/* Date/Time Row */}
+      <div className="flex items-center gap-3 mb-5">
+        <TimeBox month={startMonth} day={startDay} label="Start" time={startTime} />
+        <ArrowIcon className="w-5 h-5 text-white/20" />
+        <TimeBox month={endMonth} day={endDay} label="End" time={endTime} />
+      </div>
+
+      {/* Prize Row */}
+      <div className="flex items-center gap-3 mb-5">
+        <div className="w-8 h-8 bg-[#1a1f3a] border border-white/10 rounded flex items-center justify-center">
+          <TrophyIcon className="w-5 h-5 text-[#f4c44f]" />
+        </div>
+        <div>
+          <p className="text-xs text-white/40">Total prize</p>
+          <p className="text-base font-semibold text-white/90">{prizePool > 0 ? formatMoney(prizePool, prizeCurrency) : "No prize"}</p>
+        </div>
+      </div>
+
+      {/* Countdown Row */}
+      <div className="mb-5">
+        <p className="text-sm text-white/40 mb-2">Starts in</p>
+        <div className="flex items-center gap-2">
+          <CountdownUnit value={`${pad2(countdown.days)}d`} />
+          <span className="text-white/20 text-xs">:</span>
+          <CountdownUnit value={`${pad2(countdown.hours)}h`} />
+          <span className="text-white/20 text-xs">:</span>
+          <CountdownUnit value={`${pad2(countdown.minutes)}m`} />
+          <span className="text-white/20 text-xs">:</span>
+          <CountdownUnit value={`${pad2(countdown.seconds)}s`} />
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div className="h-px bg-white/10 mb-5" />
+
+      {/* Bottom Row: Stats + Button */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-[#1a1f3a] border border-white/10 rounded flex items-center justify-center">
+            <UsersIcon className="w-5 h-5 text-white/40" />
           </div>
-
-          {/* time row */}
-          <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-4">
-            <TimeBox
-              label="Start"
-              month={startMonth}
-              day={startDay}
-              time={startTime}
-            />
-
-            <ArrowIcon className="hidden h-7 w-7 text-white/25 sm:block" />
-            <div className="h-px w-full bg-white/10 sm:hidden" />
-
-            <TimeBox
-              label="End"
-              month={endMonth}
-              day={endDay}
-              time={endTime}
-            />
-          </div>
-
-          {/* prize */}
-          <div className="mt-7 flex items-center gap-4">
-            <div className="pill-shadow soft-border grid h-12 w-12 place-items-center rounded-[14px] bg-[#0d1030]">
-              <TrophyIcon className="h-7 w-7 text-[#f4c44f]" />
-            </div>
-            <div>
-              <div className="text-[18px] sm:text-[20px] font-medium text-white/45 leading-[1.05]">
-                Total prize
-              </div>
-              <div className="mt-1 text-[26px] sm:text-[28px] font-semibold text-white/92 leading-[1.05]">
-                {prizeText}
-              </div>
-            </div>
-          </div>
-
-          {/* divider */}
-          <div className="mt-7 h-px w-full bg-white/10" />
-
-          {/* bottom row */}
-          <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-center sm:gap-12">
-            <div className="flex items-center gap-4">
-              <div className="pill-shadow soft-border grid h-12 w-12 place-items-center rounded-[14px] bg-[#0d1030]">
-                <UsersIcon className="h-7 w-7 text-white/45" />
-              </div>
-              <div>
-                <div className="text-[22px] font-semibold text-white/70 leading-[1]">
-                  {tradersText}
-                </div>
-                <div className="mt-1 text-[18px] font-medium text-white/35 leading-[1]">
-                  Traders
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <div className="pill-shadow soft-border grid h-12 w-12 place-items-center rounded-[14px] bg-[#0d1030]">
-                <TicketCoinIcon className="h-7 w-7 text-[#7a7cff]" />
-              </div>
-              <div>
-                <div className="text-[22px] font-semibold text-white/92 leading-[1]">
-                  {formatMoney(entryFee, entryFeeCurrency)}
-                </div>
-                <div className="mt-1 text-[18px] font-medium text-white/35 leading-[1]">
-                  Entry fee
-                </div>
-              </div>
-            </div>
+          <div>
+            <p className="text-xs text-white/40">Traders</p>
+            <p className="text-base font-semibold text-white/70">{participants > 0 ? participants : "-"}</p>
           </div>
         </div>
 
-        {/* RIGHT */}
-        <div className="shrink-0 lg:text-right">
-          {/* top icons row */}
-          <div className="flex items-center justify-between gap-4 lg:justify-end">
-            <Badge
-              value={String(durationValue)}
-              unit={durationUnit}
-              variant={badgeVariant}
-            />
-            <div className="grid h-12 w-12 place-items-center rounded-[14px] soft-border bg-[#0d1030]">
-              <PlayIcon className="h-7 w-7 text-white/70" />
-            </div>
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-[#1a1f3a] border border-white/10 rounded flex items-center justify-center">
+            <TicketCoinIcon className="w-5 h-5 text-[#7a7cff]" />
           </div>
-
-          <div className="mt-5 text-[24px] sm:text-[28px] font-medium text-white/35 lg:text-right">
-            Starts in
+          <div>
+            <p className="text-xs text-white/40">Entry fee</p>
+            <p className="text-base font-semibold text-white/90">{formatMoney(entryFee, entryFeeCurrency)}</p>
           </div>
-
-          <div className="mt-3 flex flex-wrap items-center gap-2 lg:justify-end">
-            <CountdownPill value={`${countdown.days}d`} />
-            <div className="text-white/25 text-[18px] font-semibold">:</div>
-            <CountdownPill value={`${pad2(countdown.hours)}h`} />
-            <div className="text-white/25 text-[18px] font-semibold">:</div>
-            <CountdownPill value={`${pad2(countdown.minutes)}m`} />
-            <div className="text-white/25 text-[18px] font-semibold">:</div>
-            <CountdownPill value={`${pad2(countdown.seconds)}s`} />
-          </div>
-
-          <button
-            className="join-shadow mt-5 w-full sm:w-[190px] rounded-[14px] bg-[#20d0f2] py-4 text-[34px] sm:text-[36px] font-semibold text-[#061027] active:scale-[0.99] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-            type="button"
-            onClick={onJoin}
-            disabled={isEnded}
-            data-testid="button-join-competition"
-          >
-            Join
-          </button>
         </div>
+
+        <button
+          onClick={onJoin}
+          disabled={isEnded}
+          data-testid="button-join-competition"
+          className="bg-[#20d0f2] text-[#061027] font-bold px-6 py-3 rounded-lg text-sm hover:bg-[#1dbfd9] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Join
+        </button>
       </div>
     </section>
   );
