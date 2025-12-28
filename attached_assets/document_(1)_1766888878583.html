@@ -1,49 +1,17 @@
-import React, { useEffect, useMemo, useState, memo } from "react";
+// components/TradingContestCards.tsx
+import React from "react";
 
-type MarketType = "فارکس" | "کریپتو";
-
-type PrizeBreakdown = {
-  first: number;
-  second: number;
-  third: number;
-  currency?: string;
-};
-
-export type CompetitionCardProps = {
+type Contest = {
   title: string;
-  entryFee: number;
-  entryFeeCurrency?: string;
-  participants: number;
-  maxParticipants?: number;
-  marketType: MarketType;
-  startsAt: string;
-  endsAt: string;
-  prizePool: number;
-  prizeCurrency?: string;
-  prizeBreakdown: PrizeBreakdown;
-  onJoin?: () => void;
+  id: string;
+  start: { month: string; day: string; time: string };
+  end: { month: string; day: string; time: string };
+  totalPrizeText: string;
+  tradersValue: string;
+  entryFeeValue: string;
+  countdown: { d: string; h: string; m: string; s: string };
+  badge: { value: string; unit: string; variant: "circle" | "square" };
 };
-
-function pad2(n: number) {
-  return String(n).padStart(2, "0");
-}
-
-function formatMoney(value: number, currency?: string) {
-  const parts = Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  return currency ? `${parts} ${currency}` : parts;
-}
-
-function diffParts(ms: number) {
-  const clamped = Math.max(0, ms);
-  const totalSeconds = Math.floor(clamped / 1000);
-
-  const days = Math.floor(totalSeconds / (3600 * 24));
-  const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-
-  return { days, hours, minutes, seconds, totalSeconds };
-}
 
 function ArrowIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -254,92 +222,36 @@ function Badge({
   );
 }
 
-const CompetitionCard = memo(function CompetitionCard(props: CompetitionCardProps) {
-  const {
-    title,
-    entryFee,
-    entryFeeCurrency = "USDT",
-    participants,
-    marketType,
-    startsAt,
-    endsAt,
-    prizePool,
-    prizeCurrency = "USDT",
-    prizeBreakdown,
-    onJoin,
-  } = props;
-
-  const startsMs = useMemo(() => new Date(startsAt).getTime(), [startsAt]);
-  const endsMs = useMemo(() => new Date(endsAt).getTime(), [endsAt]);
-
-  const [now, setNow] = useState(() => Date.now());
-
-  useEffect(() => {
-    const id = window.setInterval(() => setNow(Date.now()), 250);
-    return () => window.clearInterval(id);
-  }, []);
-
-  const untilStart = startsMs - now;
-  const untilEnd = endsMs - now;
-
-  const isUpcoming = untilStart > 0;
-  const isLive = untilStart <= 0 && untilEnd > 0;
-  const isEnded = untilEnd <= 0;
-
-  const countdown = isUpcoming ? diffParts(untilStart) : diffParts(untilEnd);
-
-  const startDate = new Date(startsAt);
-  const endDate = new Date(endsAt);
-  const startMonth = startDate.toLocaleString("en-US", { month: "short" }).toUpperCase();
-  const startDay = String(startDate.getDate()).padStart(2, "0");
-  const startTime = `${String(startDate.getHours()).padStart(2, "0")}:${String(startDate.getMinutes()).padStart(2, "0")}`;
-  const endMonth = endDate.toLocaleString("en-US", { month: "short" }).toUpperCase();
-  const endDay = String(endDate.getDate()).padStart(2, "0");
-  const endTime = `${String(endDate.getHours()).padStart(2, "0")}:${String(endDate.getMinutes()).padStart(2, "0")}`;
-
-  const durationMs = Math.max(0, endsMs - startsMs);
-  const durationParts = diffParts(durationMs);
-  const duration = Math.ceil(durationMs / (3600 * 1000));
-  const durationUnit = duration >= 24 ? "D" : "H";
-  const durationValue = duration >= 24 ? Math.ceil(duration / 24) : duration;
-
-  const badgeVariant = durationUnit === "D" ? "square" : "circle";
-
-  const prizeText = prizePool > 0 ? formatMoney(prizePool, prizeCurrency) : "No prize";
-  const tradersText = participants > 0 ? String(participants) : "-";
-
+function ContestCard({ contest }: { contest: Contest }) {
   return (
-    <section
-      className="card-glow soft-border rounded-[26px] bg-gradient-to-b from-[#151a3d] to-[#0f1330] px-5 py-6 sm:px-7 sm:py-7"
-      data-testid="card-competition"
-    >
+    <section className="card-glow soft-border rounded-[26px] bg-gradient-to-b from-[#151a3d] to-[#0f1330] px-5 py-6 sm:px-7 sm:py-7">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-10">
         {/* LEFT */}
         <div className="min-w-0">
           <div className="text-[38px] sm:text-[46px] font-semibold tracking-tight text-white/95 leading-[1]">
-            {title}
+            {contest.title}
           </div>
           <div className="mt-1 text-[20px] sm:text-[24px] font-medium tracking-wide text-white/35">
-            ID{Math.random().toString(36).substr(2, 6).toUpperCase()}
+            {contest.id}
           </div>
 
           {/* time row */}
           <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-4">
             <TimeBox
               label="Start"
-              month={startMonth}
-              day={startDay}
-              time={startTime}
+              month={contest.start.month}
+              day={contest.start.day}
+              time={contest.start.time}
             />
 
             <ArrowIcon className="hidden h-7 w-7 text-white/25 sm:block" />
-            <div className="h-px w-full bg-white/10 sm:hidden" />
+            <div className="hidden h-px w-full bg-white/10 sm:hidden" />
 
             <TimeBox
               label="End"
-              month={endMonth}
-              day={endDay}
-              time={endTime}
+              month={contest.end.month}
+              day={contest.end.day}
+              time={contest.end.time}
             />
           </div>
 
@@ -353,7 +265,7 @@ const CompetitionCard = memo(function CompetitionCard(props: CompetitionCardProp
                 Total prize
               </div>
               <div className="mt-1 text-[26px] sm:text-[28px] font-semibold text-white/92 leading-[1.05]">
-                {prizeText}
+                {contest.totalPrizeText}
               </div>
             </div>
           </div>
@@ -369,7 +281,7 @@ const CompetitionCard = memo(function CompetitionCard(props: CompetitionCardProp
               </div>
               <div>
                 <div className="text-[22px] font-semibold text-white/70 leading-[1]">
-                  {tradersText}
+                  {contest.tradersValue}
                 </div>
                 <div className="mt-1 text-[18px] font-medium text-white/35 leading-[1]">
                   Traders
@@ -383,7 +295,7 @@ const CompetitionCard = memo(function CompetitionCard(props: CompetitionCardProp
               </div>
               <div>
                 <div className="text-[22px] font-semibold text-white/92 leading-[1]">
-                  {formatMoney(entryFee, entryFeeCurrency)}
+                  {contest.entryFeeValue}
                 </div>
                 <div className="mt-1 text-[18px] font-medium text-white/35 leading-[1]">
                   Entry fee
@@ -398,9 +310,9 @@ const CompetitionCard = memo(function CompetitionCard(props: CompetitionCardProp
           {/* top icons row */}
           <div className="flex items-center justify-between gap-4 lg:justify-end">
             <Badge
-              value={String(durationValue)}
-              unit={durationUnit}
-              variant={badgeVariant}
+              value={contest.badge.value}
+              unit={contest.badge.unit}
+              variant={contest.badge.variant}
             />
             <div className="grid h-12 w-12 place-items-center rounded-[14px] soft-border bg-[#0d1030]">
               <PlayIcon className="h-7 w-7 text-white/70" />
@@ -412,21 +324,18 @@ const CompetitionCard = memo(function CompetitionCard(props: CompetitionCardProp
           </div>
 
           <div className="mt-3 flex flex-wrap items-center gap-2 lg:justify-end">
-            <CountdownPill value={`${countdown.days}d`} />
+            <CountdownPill value={`${contest.countdown.d}d`} />
             <div className="text-white/25 text-[18px] font-semibold">:</div>
-            <CountdownPill value={`${pad2(countdown.hours)}h`} />
+            <CountdownPill value={`${contest.countdown.h}h`} />
             <div className="text-white/25 text-[18px] font-semibold">:</div>
-            <CountdownPill value={`${pad2(countdown.minutes)}m`} />
+            <CountdownPill value={`${contest.countdown.m}m`} />
             <div className="text-white/25 text-[18px] font-semibold">:</div>
-            <CountdownPill value={`${pad2(countdown.seconds)}s`} />
+            <CountdownPill value={`${contest.countdown.s}s`} />
           </div>
 
           <button
-            className="join-shadow mt-5 w-full sm:w-[190px] rounded-[14px] bg-[#20d0f2] py-4 text-[34px] sm:text-[36px] font-semibold text-[#061027] active:scale-[0.99] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+            className="join-shadow mt-5 w-full sm:w-[190px] rounded-[14px] bg-[#20d0f2] py-4 text-[34px] sm:text-[36px] font-semibold text-[#061027] active:scale-[0.99]"
             type="button"
-            onClick={onJoin}
-            disabled={isEnded}
-            data-testid="button-join-competition"
           >
             Join
           </button>
@@ -434,8 +343,59 @@ const CompetitionCard = memo(function CompetitionCard(props: CompetitionCardProp
       </div>
     </section>
   );
-});
+}
 
-CompetitionCard.displayName = "CompetitionCard";
+export default function TradingContestCards() {
+  const contests: Contest[] = [
+    {
+      title: "Crypto",
+      id: "ID85513",
+      start: { month: "DEC", day: "29", time: "02:30" },
+      end: { month: "DEC", day: "29", time: "06:30" },
+      totalPrizeText: "No prize",
+      tradersValue: "-",
+      entryFeeValue: "$5.00",
+      countdown: { d: "0", h: "21", m: "54", s: "34" },
+      badge: { value: "4", unit: "H", variant: "circle" },
+    },
+    {
+      title: "Forex",
+      id: "ID85478",
+      start: { month: "DEC", day: "29", time: "02:30" },
+      end: { month: "DEC", day: "30", time: "01:20" },
+      totalPrizeText: "No prize",
+      tradersValue: "-",
+      entryFeeValue: "$5.00",
+      countdown: { d: "0", h: "21", m: "54", s: "34" },
+      badge: { value: "1", unit: "D", variant: "square" },
+    },
+  ];
 
-export { CompetitionCard };
+  return (
+    <div className="min-h-screen bg-[#070b23] px-4 py-8 sm:px-6 sm:py-10">
+      {/* local styles (same as html preview) */}
+      <style jsx global>{`
+        .card-glow {
+          box-shadow: 0 22px 70px rgba(0, 0, 0, 0.45),
+            inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        }
+        .soft-border {
+          border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .pill-shadow {
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+        .join-shadow {
+          box-shadow: 0 18px 40px rgba(28, 208, 242, 0.18),
+            inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        }
+      `}</style>
+
+      <div className="mx-auto flex max-w-[1120px] flex-col gap-7">
+        {contests.map((c) => (
+          <ContestCard key={c.id} contest={c} />
+        ))}
+      </div>
+    </div>
+  );
+}
