@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useI18n } from "@/hooks/useI18n";
 import { useTheme } from "@/hooks/useTheme";
+import { useRoutePreloader } from "@/hooks/useRoutePreloader";
 import NotFound from "@/pages/not-found";
 
 // Lazy load pages for instant navigation
@@ -15,8 +16,10 @@ const Competitions = lazy(() => import("@/pages/competitions"));
 const Profile = lazy(() => import("@/pages/profile"));
 
 const Router = memo(() => {
+  useRoutePreloader();
+  
   return (
-    <Suspense fallback={<div />}>
+    <Suspense fallback={null}>
       <Routes>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/tournaments" element={<MyTournaments />} />
