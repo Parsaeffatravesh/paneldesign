@@ -119,7 +119,7 @@ const CompetitionCard = memo(function CompetitionCard(props: CompetitionCardProp
 
   return (
     <div className="w-full max-w-[520px]" data-testid="card-competition">
-      <div className="relative overflow-hidden rounded-2xl border border-white/8 bg-white/5 backdrop-blur-sm transition-all duration-200 hover:bg-white/7 hover:border-white/12">
+      <div className="rounded-2xl border border-border bg-card shadow-sm transition-all duration-200 hover:shadow-md dark:border-white/10 dark:bg-white/5">
         <div className="p-5 sm:p-6">
           {/* Header */}
           <div className="flex items-start justify-between gap-4 mb-4">
@@ -132,16 +132,16 @@ const CompetitionCard = memo(function CompetitionCard(props: CompetitionCardProp
                   {marketType}
                 </span>
               </div>
-              <h3 className="text-lg font-semibold text-white truncate">
+              <h3 className="text-lg font-semibold text-foreground truncate">
                 {title}
               </h3>
-              <p className="text-xs text-white/50 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {isUpcoming ? "شروع‌ می‌شود در" : isLive ? "پایان‌ می‌یابد در" : "پایان‌یافته"}
               </p>
             </div>
             <div className="shrink-0 text-right">
-              <p className="text-xs text-white/50">هزینه</p>
-              <p className="text-base font-semibold text-white">
+              <p className="text-xs text-muted-foreground">هزینه</p>
+              <p className="text-base font-semibold text-foreground">
                 {formatMoney(entryFee, entryFeeCurrency)}
               </p>
             </div>
@@ -158,19 +158,19 @@ const CompetitionCard = memo(function CompetitionCard(props: CompetitionCardProp
           {/* Details - Minimalist Grid */}
           <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
             <div>
-              <p className="text-xs text-white/50 mb-1">شروع</p>
-              <p className="text-white/80 line-clamp-2">{formatDateTime(startsAt)}</p>
+              <p className="text-xs text-muted-foreground mb-1">شروع</p>
+              <p className="text-foreground/80 line-clamp-2">{formatDateTime(startsAt)}</p>
             </div>
             <div>
-              <p className="text-xs text-white/50 mb-1">پایان</p>
-              <p className="text-white/80 line-clamp-2">{formatDateTime(endsAt)}</p>
+              <p className="text-xs text-muted-foreground mb-1">پایان</p>
+              <p className="text-foreground/80 line-clamp-2">{formatDateTime(endsAt)}</p>
             </div>
             <div>
-              <p className="text-xs text-white/50 mb-1">مدت</p>
-              <p className="text-white/80 font-medium">{durationLabel}</p>
+              <p className="text-xs text-muted-foreground mb-1">مدت</p>
+              <p className="text-foreground/80 font-medium">{durationLabel}</p>
             </div>
             <div>
-              <p className="text-xs text-white/50 mb-1">جایزه</p>
+              <p className="text-xs text-muted-foreground mb-1">جایزه</p>
               <PrizeHover
                 prizePool={prizePool}
                 prizeCurrency={prizeCurrency}
@@ -180,7 +180,7 @@ const CompetitionCard = memo(function CompetitionCard(props: CompetitionCardProp
           </div>
 
           {/* Stats Bar */}
-          <div className="flex items-center justify-between text-xs text-white/50 mb-4 py-3 border-t border-white/5">
+          <div className="flex items-center justify-between text-xs text-muted-foreground mb-4 py-3 border-t border-border">
             <span>{participants} شرکت‌کننده</span>
             {maxParticipants && <span>ظرفیت: {maxParticipants}</span>}
             <span>جایزه: {formatMoney(prizePool, prizeCurrency)}</span>
@@ -194,8 +194,8 @@ const CompetitionCard = memo(function CompetitionCard(props: CompetitionCardProp
             className={[
               "w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
               joinDisabled
-                ? "cursor-not-allowed bg-white/5 text-white/40"
-                : "bg-white text-zinc-950 hover:bg-white/95 active:bg-white/90",
+                ? "cursor-not-allowed bg-muted text-muted-foreground"
+                : "bg-primary text-primary-foreground hover:opacity-90 active:opacity-95",
             ].join(" ")}
           >
             {joinDisabled ? "مسابقه پایان‌یافته" : "شرکت در مسابقه"}
@@ -210,9 +210,9 @@ CompetitionCard.displayName = "CompetitionCard";
 
 function TimeBox({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-white/8 bg-white/5 p-2.5 text-center transition-all duration-200 hover:bg-white/7">
-      <div className="text-base font-bold text-white">{value}</div>
-      <div className="text-[10px] text-white/50 mt-0.5">{label}</div>
+    <div className="rounded-lg border border-border bg-muted/50 p-2.5 text-center transition-all duration-200 hover:bg-muted">
+      <div className="text-base font-bold text-foreground">{value}</div>
+      <div className="text-[10px] text-muted-foreground mt-0.5">{label}</div>
     </div>
   );
 }
@@ -232,7 +232,7 @@ function PrizeHover({
   return (
     <div className="relative inline-block">
       <div className="group cursor-help">
-        <span className="font-medium text-white/80 hover:text-white transition-colors">
+        <span className="font-medium text-foreground/80 hover:text-foreground transition-colors">
           {formatMoney(prizePool, prizeCurrency)}
         </span>
 
@@ -240,11 +240,11 @@ function PrizeHover({
         <div
           className={[
             "pointer-events-none absolute right-0 bottom-full z-20 mb-2 w-56 translate-y-1 opacity-0",
-            "rounded-lg border border-white/10 bg-white/10 p-3 backdrop-blur-sm",
+            "rounded-lg border border-border bg-card p-3 shadow-md",
             "transition duration-200 group-hover:translate-y-0 group-hover:opacity-100",
           ].join(" ")}
         >
-          <div className="text-xs text-white/60 mb-2">تفکیک جوایز</div>
+          <div className="text-xs text-muted-foreground mb-2">تفکیک جوایز</div>
           <div className="space-y-1 text-xs">
             <Row k="اول" v={formatMoney(breakdown.first, currency)} />
             <Row k="دوم" v={formatMoney(breakdown.second, currency)} />
@@ -259,8 +259,8 @@ function PrizeHover({
 function Row({ k, v }: { k: string; v: string }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <span className="text-white/60">{k}</span>
-      <span className="font-medium text-white">{v}</span>
+      <span className="text-muted-foreground">{k}</span>
+      <span className="font-medium text-foreground">{v}</span>
     </div>
   );
 }
