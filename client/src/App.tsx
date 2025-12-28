@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useMemo, memo, lazy, Suspense } from "react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -17,14 +17,15 @@ const Profile = lazy(() => import("@/pages/profile"));
 const Router = memo(() => {
   return (
     <Suspense fallback={<div />}>
-      <Switch>
-        <Route path="/" component={Dashboard} />
-        <Route path="/tournaments" component={MyTournaments} />
-        <Route path="/leaderboard" component={Competitions} />
-        <Route path="/competitions" component={Competitions} />
-        <Route path="/profile" component={Profile} />
-        <Route component={NotFound} />
-      </Switch>
+      <Routes>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/tournaments" element={<MyTournaments />} />
+        <Route path="/leaderboard" element={<Competitions />} />
+        <Route path="/competitions" element={<Competitions />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </Suspense>
   );
 });

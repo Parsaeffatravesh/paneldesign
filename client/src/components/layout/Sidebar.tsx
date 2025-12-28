@@ -1,4 +1,5 @@
-import { useLocation } from "wouter";
+import { useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { LayoutDashboard, Trophy, Crown, User, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMemo } from "react";
@@ -7,11 +8,11 @@ import { ThemeSwitcher } from "../ThemeSwitcher";
 import { useI18n } from "@/hooks/useI18n";
 
 export function Sidebar() {
-  const [location] = useLocation();
+  const location = useLocation();
   const { t } = useI18n();
 
   const navItems = useMemo(() => [
-    { icon: LayoutDashboard, label: t("nav.dashboard"), href: "/" },
+    { icon: LayoutDashboard, label: t("nav.dashboard"), href: "/dashboard" },
     { icon: Trophy, label: t("nav.tournaments"), href: "/tournaments" },
     { icon: Crown, label: t("nav.competitions"), href: "/leaderboard" },
     { icon: User, label: t("nav.profile"), href: "/profile" },
@@ -30,12 +31,12 @@ export function Sidebar() {
 
       <div className="flex-1 py-6 px-3 space-y-1">
         {navItems.map((item) => {
-          const isActive = location === item.href;
+          const isActive = location.pathname === item.href;
           const Icon = item.icon;
           return (
-            <a
+            <NavLink
               key={item.href}
-              href={item.href}
+              to={item.href}
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-200 group",
                 isActive 
@@ -45,7 +46,7 @@ export function Sidebar() {
             >
               <Icon className={cn("h-5 w-5", isActive ? "stroke-[2.5px]" : "stroke-[1.5px] group-hover:stroke-[2px]")} />
               {item.label}
-            </a>
+            </NavLink>
           );
         })}
       </div>
