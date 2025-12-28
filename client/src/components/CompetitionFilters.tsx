@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { ChevronDown } from "lucide-react";
 
 interface Filters {
-  status: string[];
+  marketType: string[];
   minFee: number;
   maxFee: number;
   minPrize: number;
@@ -20,7 +20,7 @@ export function CompetitionFilters({ onFiltersChange }: Props) {
   const { t } = useI18n();
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<Filters>({
-    status: [],
+    marketType: [],
     minFee: 0,
     maxFee: 1000,
     minPrize: 0,
@@ -83,21 +83,21 @@ export function CompetitionFilters({ onFiltersChange }: Props) {
           </div>
 
           <div>
-            <label className="text-sm font-medium">{t("competitions.filterStatus")}</label>
+            <label className="text-sm font-medium">Market Type</label>
             <div className="flex gap-2 mt-2 flex-wrap">
-              {["upcoming", "starting-soon", "live"].map((status) => (
+              {["فارکس", "کریپتو"].map((market) => (
                 <Button
-                  key={status}
-                  variant={filters.status.includes(status) ? "default" : "outline"}
+                  key={market}
+                  variant={filters.marketType.includes(market) ? "default" : "outline"}
                   size="sm"
                   onClick={() => {
-                    const updated = filters.status.includes(status)
-                      ? filters.status.filter((s) => s !== status)
-                      : [...filters.status, status];
-                    handleFilterChange({ status: updated });
+                    const updated = filters.marketType.includes(market)
+                      ? filters.marketType.filter((m) => m !== market)
+                      : [...filters.marketType, market];
+                    handleFilterChange({ marketType: updated });
                   }}
                 >
-                  {status}
+                  {market}
                 </Button>
               ))}
             </div>

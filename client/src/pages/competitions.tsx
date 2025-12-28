@@ -1,72 +1,83 @@
-import { useState, useMemo, memo, useEffect } from "react";
+import { useState, useMemo, memo } from "react";
 import { useI18n } from "@/hooks/useI18n";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { CompetitionCard } from "@/components/CompetitionCard";
+import { CompetitionCard, type CompetitionCardProps } from "@/components/CompetitionCard";
 import { CompetitionFilters } from "@/components/CompetitionFilters";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 
-const mockCompetitions = [
+const mockCompetitions: CompetitionCardProps[] = [
   {
-    id: "1",
-    title: "UI Design Challenge 2025",
-    entryFee: 50,
-    participants: 124,
-    startAt: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
-    currency: "USD",
-    prizeBreakdown: [
-      { place: 1, amount: 1000 },
-      { place: 2, amount: 500 },
-      { place: 3, amount: 250 },
-    ],
-    status: "starting-soon" as const,
-  },
-  {
-    id: "2",
-    title: "Web Development Sprint",
-    entryFee: 75,
-    participants: 89,
-    startAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-    currency: "USD",
-    prizeBreakdown: [
-      { place: 1, amount: 1500 },
-      { place: 2, amount: 750 },
-      { place: 3, amount: 375 },
-    ],
-    status: "upcoming" as const,
-  },
-  {
-    id: "3",
-    title: "Mobile App Design",
+    title: "Forex Volatility Challenge",
     entryFee: 100,
-    participants: 156,
-    startAt: new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString(),
-    currency: "USD",
-    prizeBreakdown: [
-      { place: 1, amount: 2000 },
-      { place: 2, amount: 1000 },
-      { place: 3, amount: 500 },
-    ],
-    status: "upcoming" as const,
+    entryFeeCurrency: "USDT",
+    participants: 124,
+    maxParticipants: 500,
+    marketType: "فارکس",
+    startsAt: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+    endsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    prizePool: 5000,
+    prizeCurrency: "USDT",
+    prizeBreakdown: {
+      first: 3000,
+      second: 1500,
+      third: 500,
+    },
   },
   {
-    id: "4",
-    title: "React Hackathon",
-    entryFee: 25,
-    participants: 234,
-    startAt: new Date(Date.now() + 5 * 60 * 60 * 1000).toISOString(),
-    currency: "USD",
-    prizeBreakdown: [
-      { place: 1, amount: 5000 },
-      { place: 2, amount: 2500 },
-      { place: 3, amount: 1250 },
-    ],
-    status: "live" as const,
+    title: "Bitcoin Bull Run Trading",
+    entryFee: 50,
+    entryFeeCurrency: "USDT",
+    participants: 256,
+    maxParticipants: 1000,
+    marketType: "کریپتو",
+    startsAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+    endsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+    prizePool: 10000,
+    prizeCurrency: "USDT",
+    prizeBreakdown: {
+      first: 6000,
+      second: 3000,
+      third: 1000,
+    },
+  },
+  {
+    title: "Ethereum Monthly Sprint",
+    entryFee: 75,
+    entryFeeCurrency: "USDT",
+    participants: 89,
+    marketType: "کریپتو",
+    startsAt: new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString(),
+    endsAt: new Date(Date.now() + 31 * 24 * 60 * 60 * 1000).toISOString(),
+    prizePool: 8000,
+    prizeCurrency: "USDT",
+    prizeBreakdown: {
+      first: 4800,
+      second: 2400,
+      third: 800,
+    },
+  },
+  {
+    title: "Altcoin Hunter Tournament",
+    entryFee: 30,
+    entryFeeCurrency: "USDT",
+    participants: 412,
+    maxParticipants: 2000,
+    marketType: "کریپتو",
+    startsAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+    endsAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+    prizePool: 15000,
+    prizeCurrency: "USDT",
+    prizeBreakdown: {
+      first: 9000,
+      second: 4500,
+      third: 1500,
+    },
   },
 ];
 
 interface Filters {
-  status: string[];
+  marketType: string[];
   minFee: number;
   maxFee: number;
   minPrize: number;
@@ -77,7 +88,7 @@ const Competitions = memo(function Competitions() {
   const { t, language } = useI18n();
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState<Filters>({
-    status: [],
+    marketType: [],
     minFee: 0,
     maxFee: 1000,
     minPrize: 0,
@@ -87,21 +98,16 @@ const Competitions = memo(function Competitions() {
   const filteredCompetitions = useMemo(() => {
     let result = mockCompetitions.filter((comp) => {
       const matchesSearch = comp.title.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesStatus = filters.status.length === 0 || filters.status.includes(comp.status);
+      const matchesMarket = filters.marketType.length === 0 || filters.marketType.includes(comp.marketType);
       const matchesFee = comp.entryFee <= filters.maxFee;
-      const prizeTotal = comp.prizeBreakdown.reduce((sum, p) => sum + p.amount, 0);
-      const matchesPrize = prizeTotal >= filters.minPrize;
+      const matchesPrize = comp.prizePool >= filters.minPrize;
 
-      return matchesSearch && matchesStatus && matchesFee && matchesPrize;
+      return matchesSearch && matchesMarket && matchesFee && matchesPrize;
     });
 
     // Sort
     if (filters.sortBy === "prize") {
-      result = result.sort((a, b) => {
-        const prizeA = a.prizeBreakdown.reduce((sum, p) => sum + p.amount, 0);
-        const prizeB = b.prizeBreakdown.reduce((sum, p) => sum + p.amount, 0);
-        return prizeB - prizeA;
-      });
+      result = result.sort((a, b) => b.prizePool - a.prizePool);
     } else if (filters.sortBy === "participants") {
       result = result.sort((a, b) => b.participants - a.participants);
     }
@@ -129,9 +135,16 @@ const Competitions = memo(function Competitions() {
 
         <CompetitionFilters onFiltersChange={setFilters} />
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {filteredCompetitions.map((comp) => (
-            <CompetitionCard key={comp.id} {...comp} />
+        <div className="flex flex-col gap-6">
+          {filteredCompetitions.map((comp, idx) => (
+            <div key={idx} className="flex justify-center">
+              <CompetitionCard
+                {...comp}
+                onJoin={() => {
+                  console.log("Joined:", comp.title);
+                }}
+              />
+            </div>
           ))}
         </div>
 

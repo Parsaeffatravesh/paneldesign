@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, memo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 type MarketType = "فارکس" | "کریپتو";
 
@@ -6,21 +6,26 @@ type PrizeBreakdown = {
   first: number;
   second: number;
   third: number;
-  currency?: string;
+  currency?: string; // مثلا "USDT" یا "$"
 };
 
-export type CompetitionCardProps = {
+type CompetitionCardProps = {
   title: string;
   entryFee: number;
-  entryFeeCurrency?: string;
+  entryFeeCurrency?: string; // "USDT" | "$" | "IRR" ...
   participants: number;
   maxParticipants?: number;
   marketType: MarketType;
+
+  // ISO strings recommended: "2025-12-30T18:30:00Z" or with local offset
   startsAt: string;
   endsAt: string;
+
   prizePool: number;
   prizeCurrency?: string;
+
   prizeBreakdown: PrizeBreakdown;
+
   onJoin?: () => void;
 };
 
@@ -29,12 +34,14 @@ function pad2(n: number) {
 }
 
 function formatMoney(value: number, currency?: string) {
+  // ساده و قابل کنترل (بدون وابستگی به لوکال/Intl برای ارزهای خاص)
   const parts = Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   return currency ? `${parts} ${currency}` : parts;
 }
 
 function formatDateTime(iso: string) {
   const d = new Date(iso);
+  // خروجی شیک و خوانا (اگر خواستی می‌تونیم برای timezone دقیق تنظیم کنیم)
   return d.toLocaleString("fa-IR", {
     year: "numeric",
     month: "2-digit",
@@ -57,7 +64,7 @@ function diffParts(ms: number) {
   return { days, hours, minutes, seconds, totalSeconds };
 }
 
-const CompetitionCard = memo(function CompetitionCard(props: CompetitionCardProps) {
+export default function CompetitionCard(props: CompetitionCardProps) {
   const {
     title,
     entryFee,
@@ -118,8 +125,8 @@ const CompetitionCard = memo(function CompetitionCard(props: CompetitionCardProp
   const joinDisabled = isEnded;
 
   return (
-    <div className="w-full max-w-[520px]" data-testid="card-competition">
-      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-zinc-950/70 shadow-[0_25px_80px_-35px_rgba(0,0,0,0.9)] backdrop-blur-xl transition-all duration-200 hover:shadow-[0_35px_100px_-25px_rgba(0,0,0,0.95)]">
+    <div className="w-full max-w-[520px]">
+      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-zinc-950/70 shadow-[0_25px_80px_-35px_rgba(0,0,0,0.9)] backdrop-blur-xl">
         {/* glow background */}
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute -left-28 -top-28 h-72 w-72 rounded-full bg-fuchsia-500/20 blur-3xl" />
@@ -132,18 +139,18 @@ const CompetitionCard = memo(function CompetitionCard(props: CompetitionCardProp
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium transition-colors duration-200 ${badgeClass}`}>
+                <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${badgeClass}`}>
                   {badge}
                 </span>
-                <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium transition-colors duration-200 ${marketPillClass}`}>
+                <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${marketPillClass}`}>
                   بازار: {marketType}
                 </span>
                 {maxParticipants ? (
-                  <span className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white/90 transition-colors duration-200">
+                  <span className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white/90">
                     ظرفیت: {participants}/{maxParticipants}
                   </span>
                 ) : (
-                  <span className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white/90 transition-colors duration-200">
+                  <span className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white/90">
                     شرکت‌کننده: {participants}
                   </span>
                 )}
@@ -159,7 +166,7 @@ const CompetitionCard = memo(function CompetitionCard(props: CompetitionCardProp
             </div>
 
             {/* Entry Fee */}
-            <div className="shrink-0 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-right transition-all duration-200">
+            <div className="shrink-0 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-right">
               <p className="text-xs text-white/60">ورودی</p>
               <p className="mt-1 text-base font-semibold text-white">
                 {formatMoney(entryFee, entryFeeCurrency)}
@@ -201,9 +208,8 @@ const CompetitionCard = memo(function CompetitionCard(props: CompetitionCardProp
             <button
               onClick={onJoin}
               disabled={joinDisabled}
-              data-testid="button-join-competition"
               className={[
-                "inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition-all duration-200",
+                "inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition",
                 "shadow-[0_12px_40px_-18px_rgba(0,0,0,0.9)]",
                 joinDisabled
                   ? "cursor-not-allowed bg-white/10 text-white/40"
@@ -217,13 +223,11 @@ const CompetitionCard = memo(function CompetitionCard(props: CompetitionCardProp
       </div>
     </div>
   );
-});
-
-CompetitionCard.displayName = "CompetitionCard";
+}
 
 function TimeBox({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-3 text-center transition-all duration-200">
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-3 text-center">
       <div className="text-xl font-bold tracking-wider text-white sm:text-2xl">{value}</div>
       <div className="mt-1 text-[11px] text-white/55">{label}</div>
     </div>
@@ -238,7 +242,7 @@ function InfoRow({
   value: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-4 transition-all duration-200">
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
       <div className="text-xs text-white/60">{label}</div>
       <div className="mt-1 text-sm font-medium text-white">{value}</div>
     </div>
@@ -262,7 +266,7 @@ function PrizeHover({
         <span className="font-semibold">
           {formatMoney(prizePool, prizeCurrency)}
         </span>
-        <span className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] text-white/70 transition-colors duration-200">
+        <span className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] text-white/70">
           hover
         </span>
 
@@ -298,5 +302,3 @@ function Row({ k, v }: { k: string; v: string }) {
     </div>
   );
 }
-
-export { CompetitionCard };
